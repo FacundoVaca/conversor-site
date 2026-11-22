@@ -7,6 +7,10 @@ Editá CONFIG antes de publicar.
 import datetime
 import html
 import pathlib
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from guias import GUIAS  # noqa: E402
 
 CONFIG = {
     "SITE_NAME": "Bolsillo",
@@ -26,6 +30,7 @@ NAV = [
     ("/aguinaldo/", "Aguinaldo"),
     ("/unidades/", "Unidades"),
     ("/porcentaje/", "% e IVA"),
+    ("/guias/", "Guías"),
 ]
 
 
@@ -114,6 +119,7 @@ PAGES["/"] = (
 <a class="tile" href="/plazo-fijo/"><strong>Plazo fijo</strong><small>Intereses, TEM y TEA según la TNA de tu banco.</small></a>
 <a class="tile" href="/aguinaldo/"><strong>Aguinaldo</strong><small>SAC completo o proporcional, bruto y neto.</small></a>
 <a class="tile" href="/cripto/"><strong>Criptomonedas</strong><small>BTC, ETH, USDT, USDC y SOL a pesos o dólares.</small></a>
+<a class="tile" href="/guias/"><strong>Guías</strong><small>Dólar MEP, plazo fijo, aguinaldo, IVA y más, explicado simple.</small></a>
 <a class="tile" href="/unidades/"><strong>Unidades de medida</strong><small>Longitud, peso, volumen, superficie, velocidad y temperatura.</small></a>
 <a class="tile" href="/porcentaje/"><strong>Porcentajes e IVA</strong><small>Aumentos, descuentos, variaciones y cálculo de IVA.</small></a>
 </div>
@@ -455,6 +461,50 @@ PAGES["/aguinaldo/"] = (
     faq_schema(AG_FAQ),
 )
 
+
+# ---------------------------------------------------------------- Guías
+def article_schema(g, url):
+    import json
+    data = {
+        "@context": "https://schema.org", "@type": "Article", "headline": g["titulo"],
+        "description": g["desc"], "datePublished": CONFIG["UPDATED"], "dateModified": CONFIG["UPDATED"],
+        "inLanguage": "es-AR", "mainEntityOfPage": url,
+        "author": {"@type": "Organization", "name": CONFIG["SITE_NAME"]},
+        "publisher": {"@type": "Organization", "name": CONFIG["SITE_NAME"]},
+    }
+    return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
+
+
+for _g in GUIAS:
+    _path = f"/guias/{_g['slug']}/"
+    _others = [o for o in GUIAS if o is not _g][:3]
+    PAGES[_path] = (
+        _g["titulo"] + " | " + CONFIG["SITE_NAME"],
+        _g["desc"],
+        f"""<p class="status"><a href="/guias/">Guías</a> › {_g['titulo']}</p>
+<h1>{_g['titulo']}</h1>
+<p class="lead">{_g['desc']}</p>
+<p class="status">Actualizado: {CONFIG['UPDATED']}</p>
+<p><a class="tile" href="{_g['tool'][0]}"><strong>{_g['tool'][1]} →</strong></a></p>
+{_g['body']}
+<div class="ad-slot"></div>
+<h2>Seguí leyendo</h2>
+<div class="grid">""" + "".join(
+            f'<a class="tile" href="/guias/{o["slug"]}/"><strong>{o["titulo"]}</strong></a>' for o in _others
+        ) + "</div>",
+        article_schema(_g, CONFIG["SITE_URL"] + _path),
+    )
+
+PAGES["/guias/"] = (
+    "Guías de finanzas personales para Argentina | " + CONFIG["SITE_NAME"],
+    "Guías simples sobre dólar MEP, dólar tarjeta, plazo fijo, aguinaldo, USDT, tasas de interés, inflación e IVA en Argentina.",
+    """<h1>Guías</h1>
+<p class="lead">Explicaciones claras y con ejemplos sobre dólar, ahorro, sueldo e impuestos en Argentina.</p>
+<div class="grid">""" + "".join(
+        f'<a class="tile" href="/guias/{g["slug"]}/"><strong>{g["titulo"]}</strong><small>{g["desc"]}</small></a>' for g in GUIAS
+    ) + "</div>",
+)
+
 # ---------------------------------------------------------------- Páginas institucionales
 PAGES["/sobre-nosotros/"] = (
     "Sobre nosotros | " + CONFIG["SITE_NAME"],
@@ -534,6 +584,10 @@ PAGES["/terminos/"] = (
 def build():
     for path, page in PAGES.items():
         title, desc, body, *rest = page
+        related = [g for g in GUIAS if g["tool"][0] == path]
+        if related:
+            body += "<h2>Guías relacionadas</h2><ul>" + "".join(
+                f'<li><a href="/guias/{g["slug"]}/">{g["titulo"]}</a></li>' for g in related) + "</ul>"
         schema = rest[0] if rest else ""
         target = OUT / path.strip("/") / "index.html" if path != "/" else OUT / "index.html"
         target.parent.mkdir(parents=True, exist_ok=True)
