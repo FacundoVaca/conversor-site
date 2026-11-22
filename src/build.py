@@ -26,23 +26,42 @@ OUT = pathlib.Path(__file__).resolve().parent.parent / "public"
 CSS_VERSION = hashlib.sha1((OUT / "assets" / "style.css").read_bytes()).hexdigest()[:8]
 JS_VERSION = hashlib.sha1((OUT / "assets" / "app.js").read_bytes()).hexdigest()[:8]
 
+# Menú: en PC se ven las principales y el resto va en "Más"; en celular todo entra en el botón "Menú"
 NAV = [
     ("/dolar/", "Dólar"),
-    ("/monedas/", "Euro y real"),
     ("/cripto/", "Cripto"),
     ("/plazo-fijo/", "Plazo fijo"),
+    ("/guias/", "Guías"),
+]
+NAV_MAS = [
+    ("/monedas/", "Euro y real"),
     ("/aguinaldo/", "Aguinaldo"),
     ("/unidades/", "Unidades"),
     ("/porcentaje/", "% e IVA"),
-    ("/guias/", "Guías"),
 ]
+MENU_JS = """<script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
+b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
+x.addEventListener("click",e=>{e.stopPropagation();const a=x.getAttribute("aria-expanded")!=="true";x.setAttribute("aria-expanded",a);p.classList.toggle("abierto",a)});
+document.addEventListener("click",e=>{if(!e.target.closest(".mas")){x.setAttribute("aria-expanded","false");p.classList.remove("abierto")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){x.setAttribute("aria-expanded","false");p.classList.remove("abierto");if(m.classList.contains("abierto")){b.click();b.focus()}}});})();</script>"""
 
 
 def layout(path, title, description, body, schema=""):
     c = CONFIG
     url = c["SITE_URL"] + path
-    nav = "".join(
-        f'<a href="{h}"{" aria-current=page" if h == path else ""}>{t}</a>' for h, t in NAV
+    def links(items):
+        return "".join(
+            f'<a href="{h}"{" aria-current=page" if h == path else ""}>{t}</a>' for h, t in items
+        )
+
+    en_mas = " actual" if any(h == path for h, _ in NAV_MAS) else ""
+    nav = (
+        '<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">'
+        '<span class="menu-ico" aria-hidden="true"></span>Menú</button>'
+        f'<nav class="main" id="menu" aria-label="Herramientas">{links(NAV)}'
+        f'<div class="mas"><button class="mas-btn{en_mas}" type="button" aria-expanded="false" '
+        f'aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel">{links(NAV_MAS)}</div></div>'
+        f"</nav>{MENU_JS}"
     )
     ads = ""
     if c["ADSENSE_CLIENT"]:
@@ -51,8 +70,9 @@ def layout(path, title, description, body, schema=""):
             f'?client={c["ADSENSE_CLIENT"]}" crossorigin="anonymous"></script>'
         )
     return f"""<!DOCTYPE html>
-<html lang="es-AR">
+<html lang="es-AR" class="sin-js">
 <head>
+<script>document.documentElement.className="js"</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
@@ -74,7 +94,7 @@ def layout(path, title, description, body, schema=""):
 <body>
 <header class="site"><div class="wrap">
 <a class="logo" href="/"><span>&#36;</span> {c["SITE_NAME"]}</a>
-<nav class="main" aria-label="Herramientas">{nav}</nav>
+{nav}
 </div></header>
 <main><div class="wrap">
 {body}
