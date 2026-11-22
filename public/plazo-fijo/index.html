@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="es-AR">
+<html lang="es-AR" class="sin-js">
 <head>
+<script>document.documentElement.className="js"</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora de plazo fijo: cuánto gano con mi plata</title>
@@ -15,14 +16,18 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap">
-<link rel="stylesheet" href="/assets/style.css?v=13213363">
+<link rel="stylesheet" href="/assets/style.css?v=381fe81e">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1697004556284286" crossorigin="anonymous"></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué es la TNA?", "acceptedAnswer": {"@type": "Answer", "text": "Es la tasa nominal anual que informa el banco. Los intereses de un plazo fijo de 30 días se calculan como capital × TNA × 30 ÷ 365."}}, {"@type": "Question", "name": "¿Qué diferencia hay entre TNA y TEA?", "acceptedAnswer": {"@type": "Answer", "text": "La TEA (tasa efectiva anual) supone que renovás el plazo fijo con capital e intereses durante un año. Por el interés compuesto, siempre es mayor que la TNA."}}, {"@type": "Question", "name": "¿Cuál es el plazo mínimo?", "acceptedAnswer": {"@type": "Answer", "text": "En general 30 días para plazos fijos tradicionales. Algunos bancos ofrecen plazos fijos precancelables o UVA con otras condiciones."}}, {"@type": "Question", "name": "¿Un plazo fijo le gana a la inflación?", "acceptedAnswer": {"@type": "Answer", "text": "Depende del momento. Compará la TEM (tasa efectiva mensual) que te da la calculadora con la inflación mensual publicada por el INDEC."}}]}</script>
 </head>
 <body>
 <header class="site"><div class="wrap">
 <a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
-<nav class="main" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/monedas/">Euro y real</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/" aria-current=page>Plazo fijo</a><a href="/aguinaldo/">Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a><a href="/guias/">Guías</a></nav>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-ico" aria-hidden="true"></span>Menú</button><nav class="main" id="menu" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/" aria-current=page>Plazo fijo</a><a href="/guias/">Guías</a><div class="mas"><button class="mas-btn" type="button" aria-expanded="false" aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel"><a href="/monedas/">Euro y real</a><a href="/aguinaldo/">Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a></div></div></nav><script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
+b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
+x.addEventListener("click",e=>{e.stopPropagation();const a=x.getAttribute("aria-expanded")!=="true";x.setAttribute("aria-expanded",a);p.classList.toggle("abierto",a)});
+document.addEventListener("click",e=>{if(!e.target.closest(".mas")){x.setAttribute("aria-expanded","false");p.classList.remove("abierto")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){x.setAttribute("aria-expanded","false");p.classList.remove("abierto");if(m.classList.contains("abierto")){b.click();b.focus()}}});})();</script>
 </div></header>
 <main><div class="wrap">
 
