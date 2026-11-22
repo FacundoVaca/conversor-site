@@ -5,6 +5,7 @@ Uso:  python3 src/build.py
 Editá CONFIG antes de publicar.
 """
 import datetime
+import hashlib
 import html
 import pathlib
 import sys
@@ -21,6 +22,8 @@ CONFIG = {
 }
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "public"
+# Versión del CSS para que los navegadores no usen una copia vieja después de cada cambio
+CSS_VERSION = hashlib.sha1((OUT / "assets" / "style.css").read_bytes()).hexdigest()[:8]
 
 NAV = [
     ("/dolar/", "Dólar"),
@@ -59,22 +62,24 @@ def layout(path, title, description, body, schema=""):
 <meta property="og:description" content="{html.escape(description)}">
 <meta property="og:url" content="{url}">
 <meta property="og:locale" content="es_AR">
-<meta name="theme-color" content="#0b7a5a">
+<meta name="theme-color" content="#10233f">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v={CSS_VERSION}">
 {ads}
 {schema}
 </head>
 <body>
 <header class="site"><div class="wrap">
 <a class="logo" href="/"><span>&#36;</span> {c["SITE_NAME"]}</a>
-<nav class="main">{nav}</nav>
+<nav class="main" aria-label="Herramientas">{nav}</nav>
 </div></header>
 <main><div class="wrap">
 {body}
 </div></main>
 <footer class="site"><div class="wrap">
-<p><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p class="foot-links"><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
 <p>© <span id="year"></span> {c["SITE_NAME"]}. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
 </div></footer>
 <script src="/assets/app.js" defer></script>
@@ -109,11 +114,19 @@ PAGES["/"] = (
     "Conversor de dólar, cripto y unidades | " + CONFIG["SITE_NAME"],
     "Convertí dólares a pesos con la cotización oficial, blue, MEP y tarjeta, calculá el valor de Bitcoin y USDT en pesos, y convertí unidades y porcentajes al instante.",
     """
+<section class="hero">
+<div class="hero-txt">
 <h1>Conversores rápidos y gratuitos</h1>
 <p class="lead">Cotización del dólar en Argentina, precios de criptomonedas en pesos y dólares, unidades de medida y porcentajes. Sin registrarte y desde el celular.</p>
+</div>
+<div class="pizarra">
+<h2 class="pizarra-tit">Dólar hoy, precio de venta</h2>
 <div class="grid" id="dolar-summary"><p class="status">Cargando cotizaciones…</p></div>
+<a class="pizarra-link" href="/dolar/">Convertir y ver todas las cotizaciones</a>
+</div>
+</section>
 <h2>Herramientas</h2>
-<div class="grid">
+<div class="grid tools">
 <a class="tile" href="/dolar/"><strong>Dólar a peso argentino</strong><small>Oficial, blue, MEP, CCL, tarjeta y cripto.</small></a>
 <a class="tile" href="/monedas/"><strong>Euro, real y más</strong><small>EUR, BRL, CLP y UYU a pesos argentinos.</small></a>
 <a class="tile" href="/plazo-fijo/"><strong>Plazo fijo</strong><small>Intereses, TEM y TEA según la TNA de tu banco.</small></a>
@@ -485,7 +498,7 @@ for _g in GUIAS:
 <h1>{_g['titulo']}</h1>
 <p class="lead">{_g['desc']}</p>
 <p class="status">Actualizado: {CONFIG['UPDATED']}</p>
-<p><a class="tile" href="{_g['tool'][0]}"><strong>{_g['tool'][1]} →</strong></a></p>
+<p><a class="tile tool-link" href="{_g['tool'][0]}"><strong>{_g['tool'][1]}</strong></a></p>
 {_g['body']}
 <div class="ad-slot"></div>
 <h2>Seguí leyendo</h2>
@@ -500,7 +513,7 @@ PAGES["/guias/"] = (
     "Guías simples sobre dólar MEP, dólar tarjeta, plazo fijo, aguinaldo, USDT, tasas de interés, inflación e IVA en Argentina.",
     """<h1>Guías</h1>
 <p class="lead">Explicaciones claras y con ejemplos sobre dólar, ahorro, sueldo e impuestos en Argentina.</p>
-<div class="grid">""" + "".join(
+<div class="grid tools">""" + "".join(
         f'<a class="tile" href="/guias/{g["slug"]}/"><strong>{g["titulo"]}</strong><small>{g["desc"]}</small></a>' for g in GUIAS
     ) + "</div>",
 )
@@ -612,8 +625,8 @@ def build():
         (OUT / "ads.txt").write_text(f"google.com, {pub}, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
 
     (OUT / "favicon.svg").write_text(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b7a5a"/>'
-        '<text x="32" y="44" font-size="36" text-anchor="middle" fill="#fff" font-family="Arial" font-weight="700">$</text></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#10233f"/>'
+        '<text x="32" y="44" font-size="36" text-anchor="middle" fill="#f5b800" font-family="Arial" font-weight="700">$</text></svg>',
         encoding="utf-8")
     print("Sitio generado en", OUT)
 
