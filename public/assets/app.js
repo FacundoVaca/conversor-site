@@ -241,8 +241,81 @@
     });
   }
 
+  /* ---------- Otras monedas (EUR, BRL, CLP, UYU) ---------- */
+  var MON_API = "https://dolarapi.com/v1/cotizaciones";
+  var MON_LABEL = { USD: "Dólar oficial (USD)", EUR: "Euro (EUR)", BRL: "Real brasileño (BRL)", CLP: "Peso chileno (CLP)", UYU: "Peso uruguayo (UYU)" };
+  function initMonedas() {
+    var form = $("#m-form");
+    if (!form) return;
+    var status = $("#m-status"), rates = {};
+    function calc() {
+      var amt = parseNum($("#m-amount").value), cur = $("#m-cur").value, dir = $("#m-dir").value, r = rates[cur], out = $("#m-result");
+      if (!r || isNaN(amt)) { out.innerHTML = "—"; return; }
+      if (dir === "x-ars") {
+        var p = r.compra || r.venta;
+        out.innerHTML = "$ " + fmt(amt * p, 2) + " ARS<small>" + fmt(amt, 2) + " " + cur + " × $ " + fmt(p, 4) + " (compra)</small>";
+      } else {
+        out.innerHTML = fmt(amt / r.venta, 2) + " " + cur + "<small>$ " + fmt(amt, 2) + " ÷ $ " + fmt(r.venta, 4) + " (venta)</small>";
+      }
+    }
+    form.addEventListener("input", calc);
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    var q = new URLSearchParams(location.search).get("m");
+    setStatus(status, "Cargando cotizaciones…");
+    cachedFetch(MON_API).then(function (list) {
+      var sel = $("#m-cur"), tbody = $("#m-table tbody"), last = "";
+      sel.innerHTML = ""; tbody.innerHTML = "";
+      list.forEach(function (d) {
+        if (!MON_LABEL[d.moneda]) return;
+        rates[d.moneda] = d;
+        sel.add(new Option(MON_LABEL[d.moneda], d.moneda, false, q ? d.moneda === q : d.moneda === "EUR"));
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + MON_LABEL[d.moneda] + "</td><td class=num>" + (d.compra ? "$ " + fmt(d.compra, 4) : "—") + "</td><td class=num>$ " + fmt(d.venta, 4) + "</td>";
+        tbody.appendChild(tr);
+        if (d.fechaActualizacion > last) last = d.fechaActualizacion;
+      });
+      setStatus(status, "Cotización oficial de referencia · Última actualización: " + fmtDate(last) + " · Fuente: DolarApi.com");
+      calc();
+    }).catch(function () {
+      setStatus(status, "No pudimos cargar las cotizaciones. Probá recargar en unos minutos.", true);
+    });
+  }
+
+  /* ---------- Plazo fijo ---------- */
+  function initPlazoFijo() {
+    var form = $("#pf-form");
+    if (!form) return;
+    function calc() {
+      var cap = parseNum($("#pf-cap").value), tna = parseNum($("#pf-tna").value), dias = parseNum($("#pf-dias").value), out = $("#pf-result");
+      if ([cap, tna, dias].some(isNaN) || dias <= 0) { out.innerHTML = "—"; return; }
+      var interes = cap * tna / 100 * dias / 365;
+      var tem = tna / 100 * 30 / 365;
+      var tea = (Math.pow(1 + tna / 100 * dias / 365, 365 / dias) - 1) * 100;
+      out.innerHTML = "Cobrás $ " + fmt(cap + interes, 2) + "<small>Intereses $ " + fmt(interes, 2) + " · TEM " + fmt(tem * 100, 2) + "% · TEA " + fmt(tea, 2) + "%</small>";
+    }
+    form.addEventListener("input", calc);
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    calc();
+  }
+
+  /* ---------- Aguinaldo (SAC) ---------- */
+  function initAguinaldo() {
+    var form = $("#ag-form");
+    if (!form) return;
+    function calc() {
+      var sueldo = parseNum($("#ag-sueldo").value), meses = parseNum($("#ag-meses").value), out = $("#ag-result");
+      if (isNaN(sueldo) || isNaN(meses)) { out.innerHTML = "—"; return; }
+      meses = Math.max(0, Math.min(6, meses));
+      var bruto = sueldo / 2 * meses / 6, neto = bruto * 0.83;
+      out.innerHTML = "Bruto $ " + fmt(bruto, 2) + "<small>Neto aproximado $ " + fmt(neto, 2) + " (descontando 17 % de aportes)</small>";
+    }
+    form.addEventListener("input", calc);
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    calc();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
-    initDolarSummary(); initDolar(); initCripto(); initUnidades(); initPorcentaje();
+    initDolarSummary(); initDolar(); initCripto(); initUnidades(); initPorcentaje(); initMonedas(); initPlazoFijo(); initAguinaldo();
     var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   });
 })();

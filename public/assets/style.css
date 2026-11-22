@@ -8,7 +8,7 @@ header.site{background:var(--card);border-bottom:1px solid var(--line)}
 header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 .logo{font-weight:800;font-size:1.25rem;text-decoration:none;color:var(--ink)}
 .logo span{color:var(--brand)}
-nav.main a{margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.95rem}
+nav.main a{white-space:nowrap;display:inline-block;margin-left:14px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.95rem}
 nav.main a:hover,nav.main a[aria-current]{color:var(--brand)}
 main{padding:24px 0 40px}
 h1{font-size:1.9rem;line-height:1.2;margin:.2em 0 .4em}

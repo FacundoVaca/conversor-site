@@ -20,9 +20,12 @@ OUT = pathlib.Path(__file__).resolve().parent.parent / "public"
 
 NAV = [
     ("/dolar/", "Dólar"),
+    ("/monedas/", "Euro y real"),
     ("/cripto/", "Cripto"),
+    ("/plazo-fijo/", "Plazo fijo"),
+    ("/aguinaldo/", "Aguinaldo"),
     ("/unidades/", "Unidades"),
-    ("/porcentaje/", "Porcentajes e IVA"),
+    ("/porcentaje/", "% e IVA"),
 ]
 
 
@@ -107,6 +110,9 @@ PAGES["/"] = (
 <h2>Herramientas</h2>
 <div class="grid">
 <a class="tile" href="/dolar/"><strong>Dólar a peso argentino</strong><small>Oficial, blue, MEP, CCL, tarjeta y cripto.</small></a>
+<a class="tile" href="/monedas/"><strong>Euro, real y más</strong><small>EUR, BRL, CLP y UYU a pesos argentinos.</small></a>
+<a class="tile" href="/plazo-fijo/"><strong>Plazo fijo</strong><small>Intereses, TEM y TEA según la TNA de tu banco.</small></a>
+<a class="tile" href="/aguinaldo/"><strong>Aguinaldo</strong><small>SAC completo o proporcional, bruto y neto.</small></a>
 <a class="tile" href="/cripto/"><strong>Criptomonedas</strong><small>BTC, ETH, USDT, USDC y SOL a pesos o dólares.</small></a>
 <a class="tile" href="/unidades/"><strong>Unidades de medida</strong><small>Longitud, peso, volumen, superficie, velocidad y temperatura.</small></a>
 <a class="tile" href="/porcentaje/"><strong>Porcentajes e IVA</strong><small>Aumentos, descuentos, variaciones y cálculo de IVA.</small></a>
@@ -321,6 +327,132 @@ PAGES["/porcentaje/"] = (
 <p>Dos descuentos sucesivos no se suman. Un 20 % de descuento seguido de otro 10 % no es un 30 %: primero pagás el 80 % del precio y después el 90 % de eso, es decir, el 72 % del precio original, un descuento total del 28 %. Lo mismo pasa con los aumentos mensuales: tres subas del 5 % equivalen a un 15,76 % acumulado, no a un 15 %.</p>
 """ + faq_html(PCT_FAQ),
     faq_schema(PCT_FAQ),
+)
+
+# ---------------------------------------------------------------- Otras monedas
+MON_FAQ = [
+    ("¿Qué cotización del euro se muestra?",
+     "La cotización oficial de referencia que publican los bancos. En casas de cambio o en el mercado informal el precio puede ser distinto."),
+    ("¿Cómo paso reales a pesos?",
+     "Elegí Real brasileño, la opción “Moneda → Pesos” y escribí el monto. El conversor lo multiplica por el precio de compra del real."),
+    ("¿Sirve para calcular gastos de viaje?",
+     "Sirve como referencia. Si pagás con tarjeta argentina en el exterior, el cargo final se calcula con el dólar tarjeta, que incluye impuestos."),
+]
+PAGES["/monedas/"] = (
+    "Euro, real, peso chileno y uruguayo a pesos argentinos hoy",
+    "Convertí euros, reales, pesos chilenos y pesos uruguayos a pesos argentinos (y al revés) con la cotización oficial de hoy. Actualizado cada pocos minutos.",
+    """
+<h1>Conversor de euro, real y otras monedas a pesos</h1>
+<p class="lead">Calculá cuántos pesos argentinos son tus euros, reales, pesos chilenos o uruguayos, o cuánta moneda extranjera comprás con tus pesos.</p>
+<div class="card">
+<form class="conv" id="m-form">
+<div><label for="m-amount">Monto</label><input id="m-amount" inputmode="decimal" value="100"></div>
+<div><label for="m-dir">Quiero convertir</label><select id="m-dir"><option value="x-ars">Moneda → Pesos</option><option value="ars-x">Pesos → Moneda</option></select></div>
+<div class="full"><label for="m-cur">Moneda</label><select id="m-cur"><option>Cargando…</option></select></div>
+<div class="full result" id="m-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="m-status"></p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cotizaciones oficiales de hoy</h2>
+<div class="card"><table id="m-table"><thead><tr><th>Moneda</th><th class="num">Compra</th><th class="num">Venta</th></tr></thead><tbody><tr><td colspan="3">Cargando…</td></tr></tbody></table></div>
+<h2>Las monedas más consultadas desde Argentina</h2>
+<h3>Euro</h3>
+<p>Es la moneda de buena parte de la Unión Europea y la segunda más usada en el mundo. Se consulta mucho para viajes, estudios y compras en tiendas europeas. Su precio en pesos depende de la cotización del euro contra el dólar y del dólar contra el peso.</p>
+<h3>Real brasileño</h3>
+<p>Brasil es el principal socio comercial de Argentina y uno de los destinos turísticos más elegidos. Por eso la conversión de reales a pesos es una de las más buscadas, sobre todo antes del verano.</p>
+<h3>Peso chileno y peso uruguayo</h3>
+<p>Chile y Uruguay son destinos habituales de compras y vacaciones. El peso chileno tiene un valor unitario muy bajo (hace falta una gran cantidad de pesos chilenos para un dólar), por eso en la tabla mostramos más decimales.</p>
+<h2>Cómo se calcula</h2>
+<p>Igual que con el dólar: si tenés moneda extranjera y querés pesos, se usa el precio de <strong>compra</strong>; si tenés pesos y querés moneda extranjera, se usa el precio de <strong>venta</strong>. Por ejemplo, si el euro compra a $1.300, 100 euros son $130.000.</p>
+""" + faq_html(MON_FAQ) + """
+<p class="disclaimer">Valores de referencia del mercado oficial (fuente: DolarApi.com). Consultá el precio final con tu banco o casa de cambio.</p>
+""",
+    faq_schema(MON_FAQ),
+)
+
+# ---------------------------------------------------------------- Plazo fijo
+PF_FAQ = [
+    ("¿Qué es la TNA?",
+     "Es la tasa nominal anual que informa el banco. Los intereses de un plazo fijo de 30 días se calculan como capital × TNA × 30 ÷ 365."),
+    ("¿Qué diferencia hay entre TNA y TEA?",
+     "La TEA (tasa efectiva anual) supone que renovás el plazo fijo con capital e intereses durante un año. Por el interés compuesto, siempre es mayor que la TNA."),
+    ("¿Cuál es el plazo mínimo?",
+     "En general 30 días para plazos fijos tradicionales. Algunos bancos ofrecen plazos fijos precancelables o UVA con otras condiciones."),
+    ("¿Un plazo fijo le gana a la inflación?",
+     "Depende del momento. Compará la TEM (tasa efectiva mensual) que te da la calculadora con la inflación mensual publicada por el INDEC."),
+]
+PAGES["/plazo-fijo/"] = (
+    "Calculadora de plazo fijo: cuánto gano con mi plata",
+    "Calculá cuánto ganás con un plazo fijo en pesos según la TNA de tu banco y los días. Te mostramos los intereses, la TEM y la TEA al instante.",
+    """
+<h1>Calculadora de plazo fijo</h1>
+<p class="lead">Escribí cuánto querés invertir, la tasa que te ofrece tu banco y el plazo. Te mostramos cuánto vas a cobrar.</p>
+<div class="card">
+<form class="conv" id="pf-form">
+<div class="full"><label for="pf-cap">Capital ($)</label><input id="pf-cap" inputmode="decimal" value="1.000.000"></div>
+<div><label for="pf-tna">TNA (%)</label><input id="pf-tna" inputmode="decimal" value="30"></div>
+<div><label for="pf-dias">Plazo (días)</label><input id="pf-dias" inputmode="numeric" value="30"></div>
+<div class="full result" id="pf-result" aria-live="polite">—</div>
+</form>
+<p class="status">La tasa del ejemplo es ilustrativa. Usá la TNA que figure en el home banking de tu banco.</p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calculan los intereses</h2>
+<p>Los bancos informan la <strong>TNA</strong> (tasa nominal anual). Para un plazo fijo tradicional, los intereses son:</p>
+<p class="card">Intereses = Capital × TNA ÷ 100 × Días ÷ 365</p>
+<p>Por ejemplo, con $1.000.000 a una TNA del 30 % durante 30 días: 1.000.000 × 0,30 × 30 ÷ 365 = $24.657. Al vencimiento cobrás $1.024.657.</p>
+<h2>TEM y TEA: para comparar</h2>
+<p>La <strong>TEM</strong> (tasa efectiva mensual) es lo que rinde tu plata en un mes. Es útil para compararla con la inflación mensual. La <strong>TEA</strong> (tasa efectiva anual) es lo que ganarías si renovaras el plazo fijo todo un año, sumando los intereses al capital cada vez. Como los intereses también generan intereses, la TEA es mayor que la TNA.</p>
+<h2>Plazo fijo tradicional, UVA y precancelable</h2>
+<ul>
+<li><strong>Tradicional:</strong> tasa fija conocida de antemano. Es el que calcula esta herramienta.</li>
+<li><strong>UVA:</strong> el capital se ajusta por inflación (a través de las UVA) y además paga una tasa pequeña. Suele exigir un plazo mínimo más largo.</li>
+<li><strong>Precancelable:</strong> te permite retirar la plata antes, a cambio de una tasa menor si lo cancelás anticipadamente.</li>
+</ul>
+<h2>Antes de invertir</h2>
+<p>Los depósitos a plazo fijo en pesos en bancos argentinos están cubiertos por el Sistema de Seguro de Garantía de los Depósitos hasta un monto máximo por persona y por banco, que se actualiza periódicamente. Comparar tasas entre bancos y billeteras virtuales puede marcar una diferencia importante en lo que cobrás.</p>
+""" + faq_html(PF_FAQ) + """
+<p class="disclaimer">Cálculo informativo. No incluye impuestos ni condiciones particulares de cada banco y no constituye asesoramiento financiero.</p>
+""",
+    faq_schema(PF_FAQ),
+)
+
+# ---------------------------------------------------------------- Aguinaldo
+AG_FAQ = [
+    ("¿Cuándo se cobra el aguinaldo?",
+     "En dos cuotas: la primera hasta el 30 de junio y la segunda hasta el 18 de diciembre. Hay cuatro días hábiles adicionales de plazo para el pago."),
+    ("¿Qué sueldo se toma para el cálculo?",
+     "La mejor remuneración mensual bruta del semestre, incluyendo horas extra y conceptos remunerativos."),
+    ("¿Cómo se calcula si trabajé menos de seis meses?",
+     "Se paga en forma proporcional: la mitad del mejor sueldo multiplicada por los meses trabajados y dividida por seis. Para mayor precisión, se puede hacer por días trabajados."),
+]
+PAGES["/aguinaldo/"] = (
+    "Calculadora de aguinaldo (SAC): cuánto cobro bruto y neto",
+    "Calculá tu aguinaldo de junio o diciembre: medio aguinaldo completo o proporcional según los meses trabajados, en bruto y neto aproximado.",
+    """
+<h1>Calculadora de aguinaldo</h1>
+<p class="lead">Calculá el sueldo anual complementario (SAC) de junio o diciembre, completo o proporcional.</p>
+<div class="card">
+<form class="conv" id="ag-form">
+<div><label for="ag-sueldo">Mejor sueldo bruto del semestre ($)</label><input id="ag-sueldo" inputmode="decimal" value="800.000"></div>
+<div><label for="ag-meses">Meses trabajados en el semestre</label><input id="ag-meses" inputmode="decimal" value="6"></div>
+<div class="full result" id="ag-result" aria-live="polite">—</div>
+</form>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula el aguinaldo</h2>
+<p>El aguinaldo, o sueldo anual complementario (SAC), equivale a medio sueldo por semestre. Se calcula como el <strong>50 % de la mejor remuneración mensual bruta</strong> del semestre (enero a junio, o julio a diciembre).</p>
+<p class="card">Aguinaldo = Mejor sueldo bruto ÷ 2 × Meses trabajados ÷ 6</p>
+<p>Si trabajaste los seis meses, cobrás la mitad del mejor sueldo. Si entraste a trabajar en marzo, por ejemplo, cobrás la parte proporcional a cuatro meses.</p>
+<h2>Del bruto al neto</h2>
+<p>Al aguinaldo se le aplican los mismos descuentos que al sueldo: 11 % de jubilación, 3 % de PAMI (ley 19.032) y 3 % de obra social, en total un 17 % para la mayoría de los trabajadores en relación de dependencia. Según tus ingresos, también puede corresponder una retención de impuesto a las ganancias, que esta calculadora no incluye.</p>
+<h2>Ejemplo</h2>
+<p>Si tu mejor sueldo bruto del semestre fue de $800.000 y trabajaste los seis meses, el aguinaldo bruto es de $400.000. Descontando el 17 % de aportes, cobrás alrededor de $332.000.</p>
+""" + faq_html(AG_FAQ) + """
+<p class="disclaimer">Cálculo orientativo. Ante dudas sobre tu caso, consultá tu recibo de sueldo, a tu empleador o a un contador.</p>
+""",
+    faq_schema(AG_FAQ),
 )
 
 # ---------------------------------------------------------------- Páginas institucionales
