@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversor de Bitcoin, USDT y Ethereum a pesos argentinos y dólares</title>
+<meta name="description" content="Calculá cuántos pesos o dólares son tus Bitcoin, Ethereum, USDT, USDC o Solana, o cuánta cripto comprás con un monto. Precios de referencia actualizados.">
+<link rel="canonical" href="https://bolsillo.online/cripto/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Conversor de Bitcoin, USDT y Ethereum a pesos argentinos y dólares">
+<meta property="og:description" content="Calculá cuántos pesos o dólares son tus Bitcoin, Ethereum, USDT, USDC o Solana, o cuánta cripto comprás con un monto. Precios de referencia actualizados.">
+<meta property="og:url" content="https://bolsillo.online/cripto/">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#0b7a5a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿De dónde salen los precios?", "acceptedAnswer": {"@type": "Answer", "text": "Usamos el precio promedio que publica CoinGecko, que agrega datos de cientos de exchanges. El precio de un exchange puntual puede ser un poco distinto."}}, {"@type": "Question", "name": "¿Por qué el USDT en pesos no coincide con el dólar oficial?", "acceptedAnswer": {"@type": "Answer", "text": "Porque el USDT se compra con pesos en exchanges, a un precio que se forma por oferta y demanda. Por eso suele estar más cerca del dólar MEP o blue que del oficial."}}, {"@type": "Question", "name": "¿Puedo comprar cripto desde esta página?", "acceptedAnswer": {"@type": "Answer", "text": "No. Es solo una calculadora de referencia. No vendemos ni intermediamos activos."}}]}</script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
+<nav class="main"><a href="/dolar/">Dólar</a><a href="/cripto/" aria-current=page>Cripto</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">Porcentajes e IVA</a></nav>
+</div></header>
+<main><div class="wrap">
+
+<h1>Conversor de criptomonedas a pesos y dólares</h1>
+<p class="lead">Calculá el valor de tus BTC, ETH, USDT, USDC o SOL en pesos argentinos o en dólares, o al revés.</p>
+<div class="card">
+<form class="conv" id="cripto-form">
+<div><label for="c-amount">Monto</label><input id="c-amount" inputmode="decimal" value="1"></div>
+<div><label for="c-dir">Quiero convertir</label><select id="c-dir"><option value="coin-fiat">Cripto → Moneda</option><option value="fiat-coin">Moneda → Cripto</option></select></div>
+<div><label for="c-coin">Criptomoneda</label><select id="c-coin"><option value="bitcoin">Bitcoin (BTC)</option><option value="ethereum">Ethereum (ETH)</option><option value="tether">Tether (USDT)</option><option value="usd-coin">USD Coin (USDC)</option><option value="solana">Solana (SOL)</option></select></div>
+<div><label for="c-fiat">Moneda</label><select id="c-fiat"><option value="ars">Pesos argentinos (ARS)</option><option value="usd">Dólares (USD)</option></select></div>
+<div class="full result" id="c-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="cripto-status"></p>
+</div>
+<div class="ad-slot"></div>
+<h2>Precios de referencia</h2>
+<div class="card"><table id="cripto-table"><thead><tr><th>Moneda</th><th class="num">USD</th><th class="num">ARS</th><th class="num">24 h</th></tr></thead><tbody><tr><td colspan="4">Cargando…</td></tr></tbody></table></div>
+<h2>Cómo leer estos precios</h2>
+<p>El precio de una criptomoneda cambia todo el tiempo y varía un poco entre exchanges. Lo que ves acá es un <strong>promedio de mercado</strong>: sirve para saber cuánto vale aproximadamente lo que tenés o para comparar ofertas. Al operar, el exchange te va a mostrar su propio precio de compra y de venta, y puede sumar comisiones de trading o de retiro.</p>
+<h2>Stablecoins: USDT y USDC</h2>
+<p>Las stablecoins son criptomonedas diseñadas para valer siempre cerca de un dólar. En Argentina se usan mucho como forma de ahorro o para cobrar del exterior, porque se pueden comprar con pesos a cualquier hora. El precio del USDT en pesos funciona, en la práctica, como otro tipo de cambio: el llamado <em>dólar cripto</em>.</p>
+<h2>Bitcoin, Ethereum y Solana</h2>
+<p>A diferencia de las stablecoins, estas criptomonedas tienen precios muy volátiles: pueden subir o bajar más de un 5 % en un solo día. Por eso la columna “24 h” de la tabla te muestra la variación del último día. Si estás calculando un pago o una compra, conviene revisar el precio justo antes de operar.</p>
+<h2>Ejemplo práctico</h2>
+<p>Supongamos que querés saber cuántos USDT comprás con $50.000. Elegí “Moneda → Cripto”, Tether (USDT) y pesos argentinos, y escribí 50000. El conversor divide el monto por el precio de referencia del USDT en pesos. Si el exchange cobra una comisión del 0,5 %, vas a recibir un poco menos.</p>
+<h2>Preguntas frecuentes</h2><dl class="faq"><dt>¿De dónde salen los precios?</dt><dd>Usamos el precio promedio que publica CoinGecko, que agrega datos de cientos de exchanges. El precio de un exchange puntual puede ser un poco distinto.</dd><dt>¿Por qué el USDT en pesos no coincide con el dólar oficial?</dt><dd>Porque el USDT se compra con pesos en exchanges, a un precio que se forma por oferta y demanda. Por eso suele estar más cerca del dólar MEP o blue que del oficial.</dd><dt>¿Puedo comprar cripto desde esta página?</dt><dd>No. Es solo una calculadora de referencia. No vendemos ni intermediamos activos.</dd></dl>
+<p class="disclaimer">Las criptomonedas son activos de alto riesgo. Esta herramienta es informativa y no constituye una recomendación de inversión. Datos: CoinGecko.</p>
+
+</div></main>
+<footer class="site"><div class="wrap">
+<p><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js" defer></script>
+</body>
+</html>

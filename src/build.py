@@ -1,0 +1,436 @@
+#!/usr/bin/env python3
+"""Genera el sitio estático en ../public a partir de las páginas definidas acá.
+
+Uso:  python3 src/build.py
+Editá CONFIG antes de publicar.
+"""
+import datetime
+import html
+import pathlib
+
+CONFIG = {
+    "SITE_NAME": "Bolsillo",
+    "SITE_URL": "https://bolsillo.online",       # sin barra final
+    "CONTACT_EMAIL": "contacto@bolsillo.online",  # un correo que leas de verdad
+    "ADSENSE_CLIENT": "",                        # ej. "ca-pub-1234567890123456" (vacío = sin anuncios)
+    "UPDATED": datetime.date.today().isoformat(),
+}
+
+OUT = pathlib.Path(__file__).resolve().parent.parent / "public"
+
+NAV = [
+    ("/dolar/", "Dólar"),
+    ("/cripto/", "Cripto"),
+    ("/unidades/", "Unidades"),
+    ("/porcentaje/", "Porcentajes e IVA"),
+]
+
+
+def layout(path, title, description, body, schema=""):
+    c = CONFIG
+    url = c["SITE_URL"] + path
+    nav = "".join(
+        f'<a href="{h}"{" aria-current=page" if h == path else ""}>{t}</a>' for h, t in NAV
+    )
+    ads = ""
+    if c["ADSENSE_CLIENT"]:
+        ads = (
+            '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+            f'?client={c["ADSENSE_CLIENT"]}" crossorigin="anonymous"></script>'
+        )
+    return f"""<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(description)}">
+<link rel="canonical" href="{url}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{html.escape(title)}">
+<meta property="og:description" content="{html.escape(description)}">
+<meta property="og:url" content="{url}">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#0b7a5a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+{ads}
+{schema}
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> {c["SITE_NAME"]}</a>
+<nav class="main">{nav}</nav>
+</div></header>
+<main><div class="wrap">
+{body}
+</div></main>
+<footer class="site"><div class="wrap">
+<p><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> {c["SITE_NAME"]}. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js" defer></script>
+</body>
+</html>
+"""
+
+
+def faq_schema(items):
+    import json
+    data = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
+            for q, a in items
+        ],
+    }
+    return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
+
+
+def faq_html(items):
+    return '<h2>Preguntas frecuentes</h2><dl class="faq">' + "".join(
+        f"<dt>{q}</dt><dd>{a}</dd>" for q, a in items
+    ) + "</dl>"
+
+
+PAGES = {}
+
+# ---------------------------------------------------------------- Inicio
+PAGES["/"] = (
+    "Conversor de dólar, cripto y unidades | " + CONFIG["SITE_NAME"],
+    "Convertí dólares a pesos con la cotización oficial, blue, MEP y tarjeta, calculá el valor de Bitcoin y USDT en pesos, y convertí unidades y porcentajes al instante.",
+    """
+<h1>Conversores rápidos y gratuitos</h1>
+<p class="lead">Cotización del dólar en Argentina, precios de criptomonedas en pesos y dólares, unidades de medida y porcentajes. Sin registrarte y desde el celular.</p>
+<div class="grid" id="dolar-summary"><p class="status">Cargando cotizaciones…</p></div>
+<h2>Herramientas</h2>
+<div class="grid">
+<a class="tile" href="/dolar/"><strong>Dólar a peso argentino</strong><small>Oficial, blue, MEP, CCL, tarjeta y cripto.</small></a>
+<a class="tile" href="/cripto/"><strong>Criptomonedas</strong><small>BTC, ETH, USDT, USDC y SOL a pesos o dólares.</small></a>
+<a class="tile" href="/unidades/"><strong>Unidades de medida</strong><small>Longitud, peso, volumen, superficie, velocidad y temperatura.</small></a>
+<a class="tile" href="/porcentaje/"><strong>Porcentajes e IVA</strong><small>Aumentos, descuentos, variaciones y cálculo de IVA.</small></a>
+</div>
+<h2>Por qué hay tantos “dólares” en Argentina</h2>
+<p>En Argentina conviven varios tipos de cambio al mismo tiempo. El <strong>dólar oficial</strong> es el que publican los bancos y se usa como referencia para muchas operaciones reguladas. El <strong>dólar blue</strong> es el precio informal que se pacta fuera del sistema bancario. El <strong>dólar MEP</strong> (o dólar bolsa) surge de comprar un bono en pesos y venderlo en dólares dentro del mercado de capitales, y el <strong>contado con liquidación (CCL)</strong> es una operación parecida pero con los dólares acreditados en una cuenta del exterior. A eso se suma el <strong>dólar tarjeta</strong>, que es el oficial más los impuestos y percepciones que se aplican a los consumos en moneda extranjera.</p>
+<p>Como cada uno tiene un precio distinto, “¿cuántos pesos son 100 dólares?” no tiene una única respuesta. Nuestro conversor te deja elegir el tipo de cambio que corresponde a tu caso y te muestra el cálculo, para que sepas exactamente de dónde sale el número.</p>
+<h2>Cómo usamos los datos</h2>
+<p>Las cotizaciones se obtienen de fuentes públicas (DolarApi.com para el dólar y CoinGecko para criptomonedas) y se actualizan cada pocos minutos. Son valores de referencia: el precio final que te ofrezca un banco, una casa de cambio o un exchange puede ser distinto por comisiones, horarios o impuestos. Las herramientas de unidades y porcentajes funcionan sin conexión a ningún servicio externo.</p>
+""",
+)
+
+# ---------------------------------------------------------------- Dólar
+DOLAR_FAQ = [
+    ("¿Qué precio se usa al convertir dólares a pesos?",
+     "Si tenés dólares y querés pesos, usamos el precio de compra, que es lo que te pagan por cada dólar. Si tenés pesos y querés dólares, usamos el precio de venta, que es lo que te cobran."),
+    ("¿Cada cuánto se actualiza la cotización?",
+     "Los datos se consultan cada pocos minutos. Debajo del conversor vas a ver la hora de la última actualización informada por la fuente."),
+    ("¿Por qué el dólar tarjeta no tiene precio de compra?",
+     "Porque es un tipo de cambio que solo se aplica a pagos con tarjeta en moneda extranjera: nadie te compra dólares a ese valor."),
+    ("¿El dólar blue es legal?",
+     "El mercado blue es informal y opera por fuera del sistema financiero regulado. Lo mostramos como referencia de precio, no como recomendación para operar en él."),
+]
+PAGES["/dolar/"] = (
+    "Dólar hoy en Argentina: conversor de dólar blue, oficial y MEP a pesos",
+    "Convertí dólares a pesos y pesos a dólares con la cotización de hoy: oficial, blue, MEP, contado con liquidación, tarjeta y cripto. Actualizado cada pocos minutos.",
+    """
+<h1>Conversor de dólar a peso argentino</h1>
+<p class="lead">Elegí el tipo de cambio, escribí el monto y obtené el resultado al instante con la cotización de hoy.</p>
+<div class="card">
+<form class="conv" id="dolar-form">
+<div><label for="d-amount">Monto</label><input id="d-amount" inputmode="decimal" value="100"></div>
+<div><label for="d-dir">Quiero convertir</label><select id="d-dir"><option value="usd-ars">Dólares → Pesos</option><option value="ars-usd">Pesos → Dólares</option></select></div>
+<div class="full"><label for="d-casa">Tipo de cambio</label><select id="d-casa"><option>Cargando…</option></select></div>
+<div class="full result" id="d-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="dolar-status"></p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cotizaciones de hoy</h2>
+<div class="card"><table id="dolar-table"><thead><tr><th>Tipo</th><th class="num">Compra</th><th class="num">Venta</th></tr></thead><tbody><tr><td colspan="3">Cargando…</td></tr></tbody></table></div>
+<h2>Cómo se calcula la conversión</h2>
+<p>La cuenta es simple, pero conviene saber qué precio usar. Cada tipo de cambio tiene dos valores: el de <strong>compra</strong> (lo que te pagan si vendés dólares) y el de <strong>venta</strong> (lo que pagás si comprás dólares). La diferencia entre ambos se llama <em>spread</em> y es la ganancia de quien hace la operación.</p>
+<ul>
+<li><strong>De dólares a pesos:</strong> monto en dólares × precio de compra. Por ejemplo, si el blue compra a $1.000, 100 dólares equivalen a $100.000.</li>
+<li><strong>De pesos a dólares:</strong> monto en pesos ÷ precio de venta. Si el blue vende a $1.020, con $100.000 obtenés unos 98 dólares.</li>
+</ul>
+<h2>Qué tipo de cambio te conviene mirar</h2>
+<h3>Dólar oficial</h3>
+<p>Es el precio que publican los bancos para la compra y venta de divisas por canales formales. Se usa como base para el dólar tarjeta y como referencia para precios regulados, contratos y declaraciones.</p>
+<h3>Dólar blue</h3>
+<p>Es la cotización del mercado informal. Suele usarse como termómetro de las expectativas, y muchas personas lo toman como referencia para alquileres, autos usados o ahorro en efectivo.</p>
+<h3>Dólar MEP o bolsa</h3>
+<p>Se obtiene comprando un bono con pesos y vendiéndolo en dólares a través de un banco o una sociedad de bolsa. Es una forma legal de acceder a dólares que quedan depositados en una cuenta local.</p>
+<h3>Contado con liquidación (CCL)</h3>
+<p>Funciona de forma parecida al MEP, pero los dólares se acreditan en una cuenta en el exterior. Lo usan sobre todo empresas e inversores.</p>
+<h3>Dólar tarjeta</h3>
+<p>Es el valor que termina pagando quien consume en moneda extranjera con tarjeta (suscripciones, compras online, viajes). Se calcula como el oficial más impuestos y percepciones vigentes, que pueden cambiar según la normativa.</p>
+<h3>Dólar cripto</h3>
+<p>Es el precio implícito al comprar stablecoins como USDT con pesos en exchanges. Opera las 24 horas, incluso fines de semana, y por eso a veces anticipa movimientos de otras cotizaciones.</p>
+""" + faq_html(DOLAR_FAQ) + """
+<p class="disclaimer">Los valores son de referencia y provienen de DolarApi.com. Verificá siempre el precio final con la entidad con la que vayas a operar.</p>
+""",
+    faq_schema(DOLAR_FAQ),
+)
+
+# ---------------------------------------------------------------- Cripto
+CRIPTO_FAQ = [
+    ("¿De dónde salen los precios?",
+     "Usamos el precio promedio que publica CoinGecko, que agrega datos de cientos de exchanges. El precio de un exchange puntual puede ser un poco distinto."),
+    ("¿Por qué el USDT en pesos no coincide con el dólar oficial?",
+     "Porque el USDT se compra con pesos en exchanges, a un precio que se forma por oferta y demanda. Por eso suele estar más cerca del dólar MEP o blue que del oficial."),
+    ("¿Puedo comprar cripto desde esta página?",
+     "No. Es solo una calculadora de referencia. No vendemos ni intermediamos activos."),
+]
+PAGES["/cripto/"] = (
+    "Conversor de Bitcoin, USDT y Ethereum a pesos argentinos y dólares",
+    "Calculá cuántos pesos o dólares son tus Bitcoin, Ethereum, USDT, USDC o Solana, o cuánta cripto comprás con un monto. Precios de referencia actualizados.",
+    """
+<h1>Conversor de criptomonedas a pesos y dólares</h1>
+<p class="lead">Calculá el valor de tus BTC, ETH, USDT, USDC o SOL en pesos argentinos o en dólares, o al revés.</p>
+<div class="card">
+<form class="conv" id="cripto-form">
+<div><label for="c-amount">Monto</label><input id="c-amount" inputmode="decimal" value="1"></div>
+<div><label for="c-dir">Quiero convertir</label><select id="c-dir"><option value="coin-fiat">Cripto → Moneda</option><option value="fiat-coin">Moneda → Cripto</option></select></div>
+<div><label for="c-coin">Criptomoneda</label><select id="c-coin"><option value="bitcoin">Bitcoin (BTC)</option><option value="ethereum">Ethereum (ETH)</option><option value="tether">Tether (USDT)</option><option value="usd-coin">USD Coin (USDC)</option><option value="solana">Solana (SOL)</option></select></div>
+<div><label for="c-fiat">Moneda</label><select id="c-fiat"><option value="ars">Pesos argentinos (ARS)</option><option value="usd">Dólares (USD)</option></select></div>
+<div class="full result" id="c-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="cripto-status"></p>
+</div>
+<div class="ad-slot"></div>
+<h2>Precios de referencia</h2>
+<div class="card"><table id="cripto-table"><thead><tr><th>Moneda</th><th class="num">USD</th><th class="num">ARS</th><th class="num">24 h</th></tr></thead><tbody><tr><td colspan="4">Cargando…</td></tr></tbody></table></div>
+<h2>Cómo leer estos precios</h2>
+<p>El precio de una criptomoneda cambia todo el tiempo y varía un poco entre exchanges. Lo que ves acá es un <strong>promedio de mercado</strong>: sirve para saber cuánto vale aproximadamente lo que tenés o para comparar ofertas. Al operar, el exchange te va a mostrar su propio precio de compra y de venta, y puede sumar comisiones de trading o de retiro.</p>
+<h2>Stablecoins: USDT y USDC</h2>
+<p>Las stablecoins son criptomonedas diseñadas para valer siempre cerca de un dólar. En Argentina se usan mucho como forma de ahorro o para cobrar del exterior, porque se pueden comprar con pesos a cualquier hora. El precio del USDT en pesos funciona, en la práctica, como otro tipo de cambio: el llamado <em>dólar cripto</em>.</p>
+<h2>Bitcoin, Ethereum y Solana</h2>
+<p>A diferencia de las stablecoins, estas criptomonedas tienen precios muy volátiles: pueden subir o bajar más de un 5 % en un solo día. Por eso la columna “24 h” de la tabla te muestra la variación del último día. Si estás calculando un pago o una compra, conviene revisar el precio justo antes de operar.</p>
+<h2>Ejemplo práctico</h2>
+<p>Supongamos que querés saber cuántos USDT comprás con $50.000. Elegí “Moneda → Cripto”, Tether (USDT) y pesos argentinos, y escribí 50000. El conversor divide el monto por el precio de referencia del USDT en pesos. Si el exchange cobra una comisión del 0,5 %, vas a recibir un poco menos.</p>
+""" + faq_html(CRIPTO_FAQ) + """
+<p class="disclaimer">Las criptomonedas son activos de alto riesgo. Esta herramienta es informativa y no constituye una recomendación de inversión. Datos: CoinGecko.</p>
+""",
+    faq_schema(CRIPTO_FAQ),
+)
+
+# ---------------------------------------------------------------- Unidades
+PAGES["/unidades/"] = (
+    "Conversor de unidades: metros, kilos, litros, grados y más",
+    "Convertí unidades de longitud, peso, volumen, superficie, velocidad y temperatura: metros a pies, kilos a libras, Celsius a Fahrenheit, hectáreas a acres y más.",
+    """
+<h1>Conversor de unidades de medida</h1>
+<p class="lead">Longitud, peso, volumen, superficie, velocidad y temperatura, con el resultado al instante.</p>
+<div class="card">
+<form class="conv" id="u-form">
+<div class="full"><label for="u-cat">Tipo de medida</label><select id="u-cat">
+<option value="longitud">Longitud</option><option value="peso">Peso</option><option value="volumen">Volumen</option>
+<option value="superficie">Superficie</option><option value="velocidad">Velocidad</option><option value="temperatura">Temperatura</option></select></div>
+<div class="full"><label for="u-amount">Valor</label><input id="u-amount" inputmode="decimal" value="1"></div>
+<div><label for="u-from">De</label><select id="u-from"></select></div>
+<div><label for="u-to">A</label><select id="u-to"></select></div>
+<div class="full"><button type="button" id="u-swap">⇅ Invertir unidades</button></div>
+<div class="full result" id="u-result" aria-live="polite">—</div>
+</form>
+</div>
+<div class="ad-slot"></div>
+<h2>Equivalencias más buscadas</h2>
+<div class="card"><table>
+<thead><tr><th>Conversión</th><th class="num">Equivalencia</th></tr></thead>
+<tbody>
+<tr><td>1 pulgada</td><td class="num">2,54 cm</td></tr>
+<tr><td>1 pie</td><td class="num">30,48 cm</td></tr>
+<tr><td>1 milla</td><td class="num">1,609 km</td></tr>
+<tr><td>1 libra</td><td class="num">453,6 g</td></tr>
+<tr><td>1 onza</td><td class="num">28,35 g</td></tr>
+<tr><td>1 galón (EE.UU.)</td><td class="num">3,785 litros</td></tr>
+<tr><td>1 hectárea</td><td class="num">10.000 m²</td></tr>
+<tr><td>1 acre</td><td class="num">0,405 hectáreas</td></tr>
+<tr><td>100 km/h</td><td class="num">62,1 mph</td></tr>
+</tbody></table></div>
+<h2>Cómo funciona la conversión</h2>
+<p>Para longitud, peso, volumen, superficie y velocidad, cada unidad tiene un factor respecto de una unidad base del Sistema Internacional (el metro, el kilogramo, el litro, el metro cuadrado y el metro por segundo). El conversor pasa tu valor a la unidad base y de ahí a la unidad de destino. Por ejemplo, para pasar 5 pies a centímetros: 5 × 0,3048 = 1,524 metros, y 1,524 ÷ 0,01 = 152,4 cm.</p>
+<h2>La temperatura es un caso especial</h2>
+<p>Las escalas de temperatura no empiezan en el mismo cero, por eso no alcanza con multiplicar. Las fórmulas son:</p>
+<ul>
+<li><strong>Celsius a Fahrenheit:</strong> °F = °C × 9/5 + 32. Así, 25 °C son 77 °F.</li>
+<li><strong>Fahrenheit a Celsius:</strong> °C = (°F − 32) × 5/9. Así, 100 °F son unos 37,8 °C.</li>
+<li><strong>Celsius a Kelvin:</strong> K = °C + 273,15.</li>
+</ul>
+<h2>Usos frecuentes</h2>
+<p>Las conversiones de pulgadas a centímetros sirven para comparar pantallas de televisores y celulares o medidas de ropa importada. Las de libras a kilos y de onzas a gramos son útiles para recetas y compras en tiendas de Estados Unidos. En el campo se usan mucho las hectáreas y, en documentos extranjeros, los acres. Y si viajás, pasar de millas a kilómetros o de Fahrenheit a Celsius te ayuda a entender carteles y pronósticos.</p>
+<p class="disclaimer">La “taza” se toma como 250 ml, que es la medida habitual en recetas en español. Las tazas de recetas de EE.UU. son de unos 240 ml.</p>
+""",
+)
+
+# ---------------------------------------------------------------- Porcentajes e IVA
+PCT_FAQ = [
+    ("¿Cómo calculo un aumento del 20 %?",
+     "Multiplicá el valor por 1,20. Por ejemplo, $10.000 con un 20 % de aumento son $12.000."),
+    ("¿Cómo saco el IVA de un precio final?",
+     "Dividí el precio final por 1,21 para obtener el neto. La diferencia entre el final y el neto es el IVA."),
+    ("¿Si algo sube 50 % y después baja 50 % vuelve al mismo precio?",
+     "No. Si $100 suben 50 % pasan a $150, y si bajan 50 % quedan en $75. Los porcentajes se aplican sobre el valor del momento."),
+]
+PAGES["/porcentaje/"] = (
+    "Calculadora de porcentajes, aumentos, descuentos e IVA",
+    "Calculá el porcentaje de un número, la variación porcentual entre dos valores, aumentos y descuentos, y sumá o sacá el IVA del 21 % o 10,5 % de un precio.",
+    """
+<h1>Calculadora de porcentajes e IVA</h1>
+<p class="lead">Cuatro calculadoras en una: porcentaje de un número, variación entre dos valores, aumentos o descuentos, e IVA.</p>
+<div id="pct-tools">
+<div class="card"><h2 style="margin-top:0">¿Cuánto es X % de Y?</h2>
+<form class="conv" id="pct-of">
+<div><label for="p1a">Porcentaje (%)</label><input id="p1a" inputmode="decimal" value="15"></div>
+<div><label for="p1b">Del número</label><input id="p1b" inputmode="decimal" value="20000"></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+
+<div class="card"><h2 style="margin-top:0">Variación porcentual entre dos valores</h2>
+<form class="conv" id="pct-change">
+<div><label for="p2a">Valor inicial</label><input id="p2a" inputmode="decimal" value="1000"></div>
+<div><label for="p2b">Valor final</label><input id="p2b" inputmode="decimal" value="1250"></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+
+<div class="ad-slot"></div>
+
+<div class="card"><h2 style="margin-top:0">Aplicar un aumento o un descuento</h2>
+<form class="conv" id="pct-apply">
+<div><label for="p3a">Precio</label><input id="p3a" inputmode="decimal" value="50000"></div>
+<div><label for="p3b">Porcentaje (%)</label><input id="p3b" inputmode="decimal" value="10"></div>
+<div class="full"><label for="p3m">Operación</label><select id="p3m"><option value="sumar">Aumento (+)</option><option value="restar">Descuento (−)</option></select></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+
+<div class="card"><h2 style="margin-top:0">Calculadora de IVA</h2>
+<form class="conv" id="iva">
+<div><label for="p4a">Monto ($)</label><input id="p4a" inputmode="decimal" value="10000"></div>
+<div><label for="p4b">Alícuota (%)</label><input id="p4b" inputmode="decimal" value="21"></div>
+<div class="full"><label for="p4m">El monto es</label><select id="p4m"><option value="sumar">Neto (sin IVA): sumar IVA</option><option value="restar">Final (con IVA): sacar IVA</option></select></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+</div>
+<h2>Fórmulas que usa cada calculadora</h2>
+<ul>
+<li><strong>Porcentaje de un número:</strong> resultado = número × porcentaje ÷ 100.</li>
+<li><strong>Variación porcentual:</strong> (valor final − valor inicial) ÷ valor inicial × 100. Sirve para medir cuánto subió un precio, un sueldo o una cotización.</li>
+<li><strong>Aumento:</strong> precio × (1 + porcentaje ÷ 100). <strong>Descuento:</strong> precio × (1 − porcentaje ÷ 100).</li>
+<li><strong>IVA:</strong> para sumarlo, neto × (1 + alícuota ÷ 100). Para sacarlo de un precio final, final ÷ (1 + alícuota ÷ 100).</li>
+</ul>
+<h2>Alícuotas de IVA en Argentina</h2>
+<p>La alícuota general del IVA es del <strong>21 %</strong>. Algunos bienes y servicios tienen una alícuota reducida del <strong>10,5 %</strong> (por ejemplo, ciertos alimentos y la medicina prepaga), y otros, como algunos servicios públicos para empresas, tienen una alícuota del 27 %. Podés escribir cualquier alícuota en la calculadora. Ante dudas sobre un caso puntual, consultá con tu contador o en el sitio de ARCA.</p>
+<h2>Un error común con los descuentos</h2>
+<p>Dos descuentos sucesivos no se suman. Un 20 % de descuento seguido de otro 10 % no es un 30 %: primero pagás el 80 % del precio y después el 90 % de eso, es decir, el 72 % del precio original, un descuento total del 28 %. Lo mismo pasa con los aumentos mensuales: tres subas del 5 % equivalen a un 15,76 % acumulado, no a un 15 %.</p>
+""" + faq_html(PCT_FAQ),
+    faq_schema(PCT_FAQ),
+)
+
+# ---------------------------------------------------------------- Páginas institucionales
+PAGES["/sobre-nosotros/"] = (
+    "Sobre nosotros | " + CONFIG["SITE_NAME"],
+    "Quiénes somos y por qué creamos " + CONFIG["SITE_NAME"] + ", un sitio de conversores gratuitos.",
+    f"""
+<h1>Sobre nosotros</h1>
+<p>{CONFIG["SITE_NAME"]} es un proyecto independiente hecho en Argentina. Lo creamos porque todos los días necesitamos responder preguntas simples, como cuántos pesos son 100 dólares, cuánto vale un USDT o cuánto es un 15 % de aumento, y la mayoría de las páginas que lo resuelven están llenas de distracciones o no explican de dónde sale el número.</p>
+<h2>Nuestro enfoque</h2>
+<ul>
+<li><strong>Rápido:</strong> las páginas son livianas y funcionan bien en el celular.</li>
+<li><strong>Transparente:</strong> cada conversor muestra el cálculo que hace y la fuente de los datos.</li>
+<li><strong>Gratuito:</strong> no hace falta registrarse. El sitio se sostiene con publicidad.</li>
+</ul>
+<h2>Fuentes de datos</h2>
+<p>Las cotizaciones del dólar provienen de DolarApi.com y los precios de criptomonedas de CoinGecko. Son valores de referencia y pueden diferir de los que te ofrezca cada entidad. Las conversiones de unidades y porcentajes se calculan directamente en tu navegador.</p>
+<h2>Contacto</h2>
+<p>Si encontrás un error o querés sugerir una herramienta nueva, escribinos desde la página de <a href="/contacto/">contacto</a>.</p>
+""",
+)
+
+PAGES["/contacto/"] = (
+    "Contacto | " + CONFIG["SITE_NAME"],
+    "Escribinos para reportar errores, sugerir herramientas o hacer consultas sobre " + CONFIG["SITE_NAME"] + ".",
+    f"""
+<h1>Contacto</h1>
+<p>¿Encontraste un error en algún cálculo, querés proponer un conversor nuevo o tenés una consulta sobre publicidad? Escribinos a:</p>
+<p class="card" style="font-size:1.2rem"><a href="mailto:{CONFIG["CONTACT_EMAIL"]}">{CONFIG["CONTACT_EMAIL"]}</a></p>
+<p>Respondemos en general dentro de las 48 horas hábiles. No brindamos asesoramiento financiero ni realizamos operaciones de cambio.</p>
+""",
+)
+
+PAGES["/privacidad/"] = (
+    "Política de privacidad | " + CONFIG["SITE_NAME"],
+    "Cómo " + CONFIG["SITE_NAME"] + " trata la información de quienes visitan el sitio, uso de cookies y publicidad de Google.",
+    f"""
+<h1>Política de privacidad</h1>
+<p>Última actualización: {CONFIG["UPDATED"]}</p>
+<p>En {CONFIG["SITE_NAME"]} ({CONFIG["SITE_URL"]}) respetamos tu privacidad. Esta política explica qué información se recopila cuando visitás el sitio y cómo se usa.</p>
+<h2>Información que recopilamos</h2>
+<p>No pedimos registro ni datos personales para usar los conversores. Los montos que escribís se procesan en tu navegador y no se envían a nuestros servidores. Para mostrar cotizaciones, tu navegador consulta directamente a servicios públicos de datos (DolarApi.com y CoinGecko), que pueden registrar datos técnicos como tu dirección IP según sus propias políticas. Guardamos en tu navegador (almacenamiento local) una copia temporal de las cotizaciones para que la página cargue más rápido.</p>
+<p>Si nos escribís por correo electrónico, usaremos tu dirección únicamente para responderte.</p>
+<h2>Cookies y publicidad</h2>
+<p>Este sitio utiliza Google AdSense para mostrar anuncios. Google y sus socios utilizan cookies para mostrar anuncios basados en las visitas anteriores de una persona a este sitio web o a otros sitios web.</p>
+<ul>
+<li>El uso de cookies de publicidad permite a Google y a sus socios mostrar anuncios a los usuarios en función de sus visitas a este sitio y a otros sitios de Internet.</li>
+<li>Podés inhabilitar la publicidad personalizada en la <a href="https://adssettings.google.com" rel="nofollow">Configuración de anuncios de Google</a>, o desactivar las cookies de terceros para publicidad personalizada en <a href="https://www.aboutads.info/choices/" rel="nofollow">www.aboutads.info</a>.</li>
+<li>Más información sobre cómo Google usa los datos: <a href="https://policies.google.com/technologies/partner-sites" rel="nofollow">Cómo utiliza Google la información de sitios que usan sus servicios</a>.</li>
+</ul>
+<p>Cuando corresponda según tu ubicación, se te mostrará un aviso para que aceptes o rechaces el uso de cookies publicitarias.</p>
+<h2>Tus derechos</h2>
+<p>De acuerdo con la Ley 25.326 de Protección de Datos Personales de Argentina, podés solicitar el acceso, la rectificación o la supresión de tus datos personales escribiendo a <a href="mailto:{CONFIG["CONTACT_EMAIL"]}">{CONFIG["CONTACT_EMAIL"]}</a>. La Agencia de Acceso a la Información Pública es el órgano de control de esa ley.</p>
+<h2>Menores de edad</h2>
+<p>El sitio no está dirigido a menores de 13 años y no recopilamos a sabiendas información de ellos.</p>
+<h2>Cambios en esta política</h2>
+<p>Podemos actualizar esta política. La fecha de la última actualización figura al principio de esta página.</p>
+""",
+)
+
+PAGES["/terminos/"] = (
+    "Términos de uso | " + CONFIG["SITE_NAME"],
+    "Condiciones de uso de los conversores y calculadoras de " + CONFIG["SITE_NAME"] + ".",
+    f"""
+<h1>Términos de uso</h1>
+<p>Al usar {CONFIG["SITE_NAME"]} aceptás estas condiciones.</p>
+<h2>Carácter informativo</h2>
+<p>Las cotizaciones, precios y resultados que muestra el sitio son de referencia. Pueden tener demoras o diferir de los valores de bancos, casas de cambio o exchanges. No constituyen asesoramiento financiero, impositivo ni de inversión, ni una oferta de compra o venta.</p>
+<h2>Responsabilidad</h2>
+<p>Hacemos nuestro mejor esfuerzo para que los cálculos sean correctos, pero no garantizamos que la información esté libre de errores. No nos responsabilizamos por decisiones tomadas en base a los resultados del sitio. Verificá siempre los valores con la entidad con la que vayas a operar.</p>
+<h2>Servicios de terceros</h2>
+<p>El sitio usa datos de DolarApi.com y CoinGecko, y publicidad de Google. Cada uno tiene sus propios términos y políticas.</p>
+<h2>Contacto</h2>
+<p>Consultas sobre estos términos: <a href="mailto:{CONFIG["CONTACT_EMAIL"]}">{CONFIG["CONTACT_EMAIL"]}</a>.</p>
+""",
+)
+
+
+def build():
+    for path, page in PAGES.items():
+        title, desc, body, *rest = page
+        schema = rest[0] if rest else ""
+        target = OUT / path.strip("/") / "index.html" if path != "/" else OUT / "index.html"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(layout(path, title, desc, body, schema), encoding="utf-8")
+
+    # 404
+    (OUT / "404.html").write_text(layout("/404.html", "Página no encontrada", "La página no existe.",
+        '<h1>Página no encontrada</h1><p>Volvé al <a href="/">inicio</a> para usar los conversores.</p>'), encoding="utf-8")
+
+    # sitemap y robots
+    urls = "".join(
+        f"<url><loc>{CONFIG['SITE_URL']}{p}</loc><lastmod>{CONFIG['UPDATED']}</lastmod></url>" for p in PAGES
+    )
+    (OUT / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        + urls + "</urlset>", encoding="utf-8")
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {CONFIG['SITE_URL']}/sitemap.xml\n", encoding="utf-8")
+
+    # ads.txt (solo si hay ID de AdSense)
+    if CONFIG["ADSENSE_CLIENT"]:
+        pub = CONFIG["ADSENSE_CLIENT"].replace("ca-", "")
+        (OUT / "ads.txt").write_text(f"google.com, {pub}, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
+
+    (OUT / "favicon.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b7a5a"/>'
+        '<text x="32" y="44" font-size="36" text-anchor="middle" fill="#fff" font-family="Arial" font-weight="700">$</text></svg>',
+        encoding="utf-8")
+    print("Sitio generado en", OUT)
+
+
+if __name__ == "__main__":
+    build()

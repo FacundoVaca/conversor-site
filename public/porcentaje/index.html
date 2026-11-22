@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de porcentajes, aumentos, descuentos e IVA</title>
+<meta name="description" content="Calculá el porcentaje de un número, la variación porcentual entre dos valores, aumentos y descuentos, y sumá o sacá el IVA del 21 % o 10,5 % de un precio.">
+<link rel="canonical" href="https://bolsillo.online/porcentaje/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Calculadora de porcentajes, aumentos, descuentos e IVA">
+<meta property="og:description" content="Calculá el porcentaje de un número, la variación porcentual entre dos valores, aumentos y descuentos, y sumá o sacá el IVA del 21 % o 10,5 % de un precio.">
+<meta property="og:url" content="https://bolsillo.online/porcentaje/">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#0b7a5a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Cómo calculo un aumento del 20 %?", "acceptedAnswer": {"@type": "Answer", "text": "Multiplicá el valor por 1,20. Por ejemplo, $10.000 con un 20 % de aumento son $12.000."}}, {"@type": "Question", "name": "¿Cómo saco el IVA de un precio final?", "acceptedAnswer": {"@type": "Answer", "text": "Dividí el precio final por 1,21 para obtener el neto. La diferencia entre el final y el neto es el IVA."}}, {"@type": "Question", "name": "¿Si algo sube 50 % y después baja 50 % vuelve al mismo precio?", "acceptedAnswer": {"@type": "Answer", "text": "No. Si $100 suben 50 % pasan a $150, y si bajan 50 % quedan en $75. Los porcentajes se aplican sobre el valor del momento."}}]}</script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
+<nav class="main"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/unidades/">Unidades</a><a href="/porcentaje/" aria-current=page>Porcentajes e IVA</a></nav>
+</div></header>
+<main><div class="wrap">
+
+<h1>Calculadora de porcentajes e IVA</h1>
+<p class="lead">Cuatro calculadoras en una: porcentaje de un número, variación entre dos valores, aumentos o descuentos, e IVA.</p>
+<div id="pct-tools">
+<div class="card"><h2 style="margin-top:0">¿Cuánto es X % de Y?</h2>
+<form class="conv" id="pct-of">
+<div><label for="p1a">Porcentaje (%)</label><input id="p1a" inputmode="decimal" value="15"></div>
+<div><label for="p1b">Del número</label><input id="p1b" inputmode="decimal" value="20000"></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+
+<div class="card"><h2 style="margin-top:0">Variación porcentual entre dos valores</h2>
+<form class="conv" id="pct-change">
+<div><label for="p2a">Valor inicial</label><input id="p2a" inputmode="decimal" value="1000"></div>
+<div><label for="p2b">Valor final</label><input id="p2b" inputmode="decimal" value="1250"></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+
+<div class="ad-slot"></div>
+
+<div class="card"><h2 style="margin-top:0">Aplicar un aumento o un descuento</h2>
+<form class="conv" id="pct-apply">
+<div><label for="p3a">Precio</label><input id="p3a" inputmode="decimal" value="50000"></div>
+<div><label for="p3b">Porcentaje (%)</label><input id="p3b" inputmode="decimal" value="10"></div>
+<div class="full"><label for="p3m">Operación</label><select id="p3m"><option value="sumar">Aumento (+)</option><option value="restar">Descuento (−)</option></select></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+
+<div class="card"><h2 style="margin-top:0">Calculadora de IVA</h2>
+<form class="conv" id="iva">
+<div><label for="p4a">Monto ($)</label><input id="p4a" inputmode="decimal" value="10000"></div>
+<div><label for="p4b">Alícuota (%)</label><input id="p4b" inputmode="decimal" value="21"></div>
+<div class="full"><label for="p4m">El monto es</label><select id="p4m"><option value="sumar">Neto (sin IVA): sumar IVA</option><option value="restar">Final (con IVA): sacar IVA</option></select></div>
+<div class="full result" aria-live="polite">—</div></form></div>
+</div>
+<h2>Fórmulas que usa cada calculadora</h2>
+<ul>
+<li><strong>Porcentaje de un número:</strong> resultado = número × porcentaje ÷ 100.</li>
+<li><strong>Variación porcentual:</strong> (valor final − valor inicial) ÷ valor inicial × 100. Sirve para medir cuánto subió un precio, un sueldo o una cotización.</li>
+<li><strong>Aumento:</strong> precio × (1 + porcentaje ÷ 100). <strong>Descuento:</strong> precio × (1 − porcentaje ÷ 100).</li>
+<li><strong>IVA:</strong> para sumarlo, neto × (1 + alícuota ÷ 100). Para sacarlo de un precio final, final ÷ (1 + alícuota ÷ 100).</li>
+</ul>
+<h2>Alícuotas de IVA en Argentina</h2>
+<p>La alícuota general del IVA es del <strong>21 %</strong>. Algunos bienes y servicios tienen una alícuota reducida del <strong>10,5 %</strong> (por ejemplo, ciertos alimentos y la medicina prepaga), y otros, como algunos servicios públicos para empresas, tienen una alícuota del 27 %. Podés escribir cualquier alícuota en la calculadora. Ante dudas sobre un caso puntual, consultá con tu contador o en el sitio de ARCA.</p>
+<h2>Un error común con los descuentos</h2>
+<p>Dos descuentos sucesivos no se suman. Un 20 % de descuento seguido de otro 10 % no es un 30 %: primero pagás el 80 % del precio y después el 90 % de eso, es decir, el 72 % del precio original, un descuento total del 28 %. Lo mismo pasa con los aumentos mensuales: tres subas del 5 % equivalen a un 15,76 % acumulado, no a un 15 %.</p>
+<h2>Preguntas frecuentes</h2><dl class="faq"><dt>¿Cómo calculo un aumento del 20 %?</dt><dd>Multiplicá el valor por 1,20. Por ejemplo, $10.000 con un 20 % de aumento son $12.000.</dd><dt>¿Cómo saco el IVA de un precio final?</dt><dd>Dividí el precio final por 1,21 para obtener el neto. La diferencia entre el final y el neto es el IVA.</dd><dt>¿Si algo sube 50 % y después baja 50 % vuelve al mismo precio?</dt><dd>No. Si $100 suben 50 % pasan a $150, y si bajan 50 % quedan en $75. Los porcentajes se aplican sobre el valor del momento.</dd></dl>
+</div></main>
+<footer class="site"><div class="wrap">
+<p><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conversor de unidades: metros, kilos, litros, grados y más</title>
+<meta name="description" content="Convertí unidades de longitud, peso, volumen, superficie, velocidad y temperatura: metros a pies, kilos a libras, Celsius a Fahrenheit, hectáreas a acres y más.">
+<link rel="canonical" href="https://bolsillo.online/unidades/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Conversor de unidades: metros, kilos, litros, grados y más">
+<meta property="og:description" content="Convertí unidades de longitud, peso, volumen, superficie, velocidad y temperatura: metros a pies, kilos a libras, Celsius a Fahrenheit, hectáreas a acres y más.">
+<meta property="og:url" content="https://bolsillo.online/unidades/">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#0b7a5a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+
+
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
+<nav class="main"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/unidades/" aria-current=page>Unidades</a><a href="/porcentaje/">Porcentajes e IVA</a></nav>
+</div></header>
+<main><div class="wrap">
+
+<h1>Conversor de unidades de medida</h1>
+<p class="lead">Longitud, peso, volumen, superficie, velocidad y temperatura, con el resultado al instante.</p>
+<div class="card">
+<form class="conv" id="u-form">
+<div class="full"><label for="u-cat">Tipo de medida</label><select id="u-cat">
+<option value="longitud">Longitud</option><option value="peso">Peso</option><option value="volumen">Volumen</option>
+<option value="superficie">Superficie</option><option value="velocidad">Velocidad</option><option value="temperatura">Temperatura</option></select></div>
+<div class="full"><label for="u-amount">Valor</label><input id="u-amount" inputmode="decimal" value="1"></div>
+<div><label for="u-from">De</label><select id="u-from"></select></div>
+<div><label for="u-to">A</label><select id="u-to"></select></div>
+<div class="full"><button type="button" id="u-swap">⇅ Invertir unidades</button></div>
+<div class="full result" id="u-result" aria-live="polite">—</div>
+</form>
+</div>
+<div class="ad-slot"></div>
+<h2>Equivalencias más buscadas</h2>
+<div class="card"><table>
+<thead><tr><th>Conversión</th><th class="num">Equivalencia</th></tr></thead>
+<tbody>
+<tr><td>1 pulgada</td><td class="num">2,54 cm</td></tr>
+<tr><td>1 pie</td><td class="num">30,48 cm</td></tr>
+<tr><td>1 milla</td><td class="num">1,609 km</td></tr>
+<tr><td>1 libra</td><td class="num">453,6 g</td></tr>
+<tr><td>1 onza</td><td class="num">28,35 g</td></tr>
+<tr><td>1 galón (EE.UU.)</td><td class="num">3,785 litros</td></tr>
+<tr><td>1 hectárea</td><td class="num">10.000 m²</td></tr>
+<tr><td>1 acre</td><td class="num">0,405 hectáreas</td></tr>
+<tr><td>100 km/h</td><td class="num">62,1 mph</td></tr>
+</tbody></table></div>
+<h2>Cómo funciona la conversión</h2>
+<p>Para longitud, peso, volumen, superficie y velocidad, cada unidad tiene un factor respecto de una unidad base del Sistema Internacional (el metro, el kilogramo, el litro, el metro cuadrado y el metro por segundo). El conversor pasa tu valor a la unidad base y de ahí a la unidad de destino. Por ejemplo, para pasar 5 pies a centímetros: 5 × 0,3048 = 1,524 metros, y 1,524 ÷ 0,01 = 152,4 cm.</p>
+<h2>La temperatura es un caso especial</h2>
+<p>Las escalas de temperatura no empiezan en el mismo cero, por eso no alcanza con multiplicar. Las fórmulas son:</p>
+<ul>
+<li><strong>Celsius a Fahrenheit:</strong> °F = °C × 9/5 + 32. Así, 25 °C son 77 °F.</li>
+<li><strong>Fahrenheit a Celsius:</strong> °C = (°F − 32) × 5/9. Así, 100 °F son unos 37,8 °C.</li>
+<li><strong>Celsius a Kelvin:</strong> K = °C + 273,15.</li>
+</ul>
+<h2>Usos frecuentes</h2>
+<p>Las conversiones de pulgadas a centímetros sirven para comparar pantallas de televisores y celulares o medidas de ropa importada. Las de libras a kilos y de onzas a gramos son útiles para recetas y compras en tiendas de Estados Unidos. En el campo se usan mucho las hectáreas y, en documentos extranjeros, los acres. Y si viajás, pasar de millas a kilómetros o de Fahrenheit a Celsius te ayuda a entender carteles y pronósticos.</p>
+<p class="disclaimer">La “taza” se toma como 250 ml, que es la medida habitual en recetas en español. Las tazas de recetas de EE.UU. son de unos 240 ml.</p>
+
+</div></main>
+<footer class="site"><div class="wrap">
+<p><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js" defer></script>
+</body>
+</html>
