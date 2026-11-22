@@ -83,7 +83,7 @@
   function initDolar() {
     var form = $("#dolar-form");
     if (!form) return;
-    var status = $("#dolar-status"), tbody = $("#dolar-table tbody"), rates = {};
+    var status = $("#dolar-status"), tbody = $("#dolar-table tbody"), cards = $("#dolar-cards"), upd = $("#dolar-upd"), rates = {};
     function calc() {
       var amt = parseNum($("#d-amount").value), casa = $("#d-casa").value, dir = $("#d-dir").value;
       var r = rates[casa], out = $("#d-result");
@@ -101,7 +101,9 @@
     setStatus(status, "Cargando cotizaciones…");
     cachedFetch(DOLAR_API).then(function (list) {
       var sel = $("#d-casa"); sel.innerHTML = ""; tbody.innerHTML = "";
+      if (cards) cards.innerHTML = "";
       var last = "";
+      var ofi = list.filter(function (x) { return x.casa === "oficial"; })[0];
       list.forEach(function (d) {
         rates[d.casa] = d;
         var o = document.createElement("option");
@@ -109,16 +111,137 @@
         if (d.casa === "blue") o.selected = true;
         sel.appendChild(o);
         var tr = document.createElement("tr");
+        var brecha = ofi && ofi.venta && d.casa !== "oficial" ? (d.venta / ofi.venta - 1) * 100 : null;
+        var bTxt = brecha === null ? "—" : (brecha > 0 ? "+" : "") + fmt(brecha, 1) + " %";
         tr.innerHTML = "<td>" + (CASA_LABEL[d.casa] || d.nombre) + "</td><td class=num>" + (d.compra ? "$ " + fmt(d.compra, 2) : "—") +
-          "</td><td class=num>$ " + fmt(d.venta, 2) + "</td>";
+          "</td><td class=num>$ " + fmt(d.venta, 2) + "</td><td class=num>" + bTxt + "</td>";
         tbody.appendChild(tr);
+        if (cards) {
+          var c = document.createElement("article");
+          c.className = "cot";
+          c.innerHTML = '<h3 class="cot-nom"></h3>' +
+            '<dl class="cot-val"><div class="cot-c"><dt>Compra</dt><dd>' + (d.compra ? "$ " + fmt(d.compra, 2) : "—") + '</dd></div>' +
+            '<div class="cot-v"><dt>Venta</dt><dd>$ ' + fmt(d.venta, 2) + '</dd></div></dl>' +
+            '<p class="cot-pie">' + (brecha === null ? (d.casa === "oficial" ? "Referencia para la brecha" : "") : "Brecha " + bTxt) +
+            '<time datetime="' + d.fechaActualizacion + '">' + fmtDate(d.fechaActualizacion) + '</time></p>';
+          c.querySelector(".cot-nom").textContent = "Dólar " + (CASA_LABEL[d.casa] || d.nombre);
+          cards.appendChild(c);
+        }
         if (d.fechaActualizacion > last) last = d.fechaActualizacion;
       });
       setStatus(status, "Última actualización: " + fmtDate(last) + " · Fuente: DolarApi.com");
+      setStatus(upd, "Actualizado el " + fmtDate(last) + " según DolarApi.com. Cada tarjeta muestra la hora de su cotización.");
       calc();
     }).catch(function () {
       setStatus(status, "No pudimos cargar las cotizaciones. Probá recargar la página en unos minutos.", true);
+      setStatus(upd, "No pudimos cargar las cotizaciones. Probá recargar la página en unos minutos.", true);
     });
+  }
+
+  /* ---------- Historial del dólar (ArgentinaDatos) ---------- */
+  var HIST_API = "https://api.argentinadatos.com/v1/cotizaciones/dolares/";
+  function initHist() {
+    var box = $("#hist");
+    if (!box) return;
+    var selCasa = $("#h-casa"), chart = $("#h-chart"), dato = $("#h-dato"), status = $("#h-status"), tabla = $("#h-tabla");
+    var btns = box.querySelectorAll(".seg button"), dias = 90, serie = [], pend = 0;
+    function fdia(iso) { var p = iso.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+    function fcorto(iso) { var p = iso.split("-"); return p[2] + "/" + p[1]; }
+    function cargar() {
+      var casa = selCasa.value, id = ++pend;
+      box.classList.add("cargando");
+      setStatus(status, "Cargando historial…");
+      cachedFetch(HIST_API + casa).then(function (list) {
+        if (id !== pend) return;
+        serie = list.filter(function (x) { return x && x.fecha && x.venta; })
+          .sort(function (a, b) { return a.fecha < b.fecha ? -1 : 1; });
+        dibujar();
+      }).catch(function () {
+        if (id !== pend) return;
+        box.classList.remove("cargando");
+        chart.innerHTML = ""; dato.textContent = ""; tabla.innerHTML = "";
+        setStatus(status, "No pudimos cargar el historial en este momento. Probá de nuevo en unos minutos.", true);
+      });
+    }
+    function dibujar() {
+      box.classList.remove("cargando");
+      if (!serie.length) { setStatus(status, "No hay datos históricos para este tipo de cambio.", true); chart.innerHTML = ""; return; }
+      var fin = new Date(serie[serie.length - 1].fecha + "T12:00:00Z");
+      var desde = new Date(fin.getTime() - dias * 864e5).toISOString().slice(0, 10);
+      var pts = serie.filter(function (x) { return x.fecha >= desde; });
+      if (pts.length < 2) { setStatus(status, "No hay suficientes datos para este período.", true); chart.innerHTML = ""; return; }
+      var a = pts[0], b = pts[pts.length - 1], vari = (b.venta / a.venta - 1) * 100;
+      var nombre = selCasa.options[selCasa.selectedIndex].text;
+      dato.innerHTML = '<strong>$ ' + fmt(b.venta, 2) + '</strong><span>' + (vari > 0 ? "+" : "") + fmt(vari, 1) +
+        ' % desde el ' + fdia(a.fecha) + ' ($ ' + fmt(a.venta, 2) + ')</span>';
+      setStatus(status, nombre + ", precio de venta al cierre de cada día. Último dato: " + fdia(b.fecha) + ". Fuente: ArgentinaDatos.");
+      svg(pts, nombre);
+      var filas = pts.slice().reverse().map(function (x) {
+        return "<tr><td>" + fdia(x.fecha) + "</td><td class=num>" + (x.compra ? "$ " + fmt(x.compra, 2) : "—") + "</td><td class=num>$ " + fmt(x.venta, 2) + "</td></tr>";
+      }).join("");
+      tabla.innerHTML = "<table><thead><tr><th>Fecha</th><th class=num>Compra</th><th class=num>Venta</th></tr></thead><tbody>" + filas + "</tbody></table>";
+    }
+    function svg(pts, nombre) {
+      var W = Math.max(280, chart.clientWidth || 600), H = W < 520 ? 210 : 280;
+      var m = { t: 12, r: 12, b: 28, l: W < 520 ? 58 : 70 };
+      var min = Infinity, max = -Infinity;
+      pts.forEach(function (x) { if (x.venta < min) min = x.venta; if (x.venta > max) max = x.venta; });
+      var pad = (max - min) * 0.08 || max * 0.02; min -= pad; max += pad;
+      var X = function (i) { return m.l + i * (W - m.l - m.r) / (pts.length - 1); };
+      var Y = function (v) { return m.t + (max - v) * (H - m.t - m.b) / (max - min); };
+      var d = pts.map(function (x, i) { return (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(x.venta).toFixed(1); }).join("");
+      var grid = "", n = 4;
+      for (var k = 0; k <= n; k++) {
+        var v = min + (max - min) * k / n, y = Y(v).toFixed(1);
+        grid += '<line x1="' + m.l + '" x2="' + (W - m.r) + '" y1="' + y + '" y2="' + y + '" class="g"/>' +
+          '<text x="' + (m.l - 8) + '" y="' + y + '" dy="4" text-anchor="end">$ ' + fmt(v, 0) + '</text>';
+      }
+      var xl = [0, Math.floor((pts.length - 1) / 2), pts.length - 1].map(function (i, j) {
+        return '<text x="' + X(i).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="' + ["start", "middle", "end"][j] + '">' + fcorto(pts[i].fecha) + '</text>';
+      }).join("");
+      var area = d + "L" + X(pts.length - 1).toFixed(1) + " " + (H - m.b) + "L" + m.l + " " + (H - m.b) + "Z";
+      chart.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" role="img" tabindex="0" aria-label="Gráfico de la evolución del ' +
+        nombre + '. Usá las flechas para recorrer los datos.">' + grid + xl +
+        '<path class="area" d="' + area + '"/><path class="linea" d="' + d + '"/>' +
+        '<line class="cruz" y1="' + m.t + '" y2="' + (H - m.b) + '" visibility="hidden"/><circle class="punto" r="5" visibility="hidden"/>' +
+        '<rect class="hit" x="' + m.l + '" y="0" width="' + (W - m.l - m.r) + '" height="' + H + '"/></svg><div class="tip" hidden></div>';
+      var el = chart.querySelector("svg"), cruz = el.querySelector(".cruz"), pto = el.querySelector(".punto"), tip = chart.querySelector(".tip"), cur = -1;
+      function mostrar(i) {
+        cur = Math.max(0, Math.min(pts.length - 1, i));
+        var x = X(cur), y = Y(pts[cur].venta), esc = chart.clientWidth / W;
+        cruz.setAttribute("x1", x); cruz.setAttribute("x2", x); cruz.setAttribute("visibility", "visible");
+        pto.setAttribute("cx", x); pto.setAttribute("cy", y); pto.setAttribute("visibility", "visible");
+        tip.hidden = false;
+        tip.innerHTML = "<strong></strong><span></span>";
+        tip.firstChild.textContent = "$ " + fmt(pts[cur].venta, 2);
+        tip.lastChild.textContent = fdia(pts[cur].fecha);
+        var left = x * esc, w = tip.offsetWidth;
+        tip.style.left = Math.max(0, Math.min(chart.clientWidth - w, left - w / 2)) + "px";
+        tip.style.top = Math.max(0, y * esc - 58) + "px";
+      }
+      function ocultar() { cruz.setAttribute("visibility", "hidden"); pto.setAttribute("visibility", "hidden"); tip.hidden = true; }
+      el.addEventListener("pointermove", function (ev) {
+        var r = el.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+        mostrar(Math.round((px - m.l) / ((W - m.l - m.r) / (pts.length - 1))));
+      });
+      el.addEventListener("pointerleave", ocultar);
+      el.addEventListener("blur", ocultar);
+      el.addEventListener("keydown", function (ev) {
+        if (ev.key === "ArrowLeft" || ev.key === "ArrowRight") {
+          ev.preventDefault(); mostrar(cur < 0 ? pts.length - 1 : cur + (ev.key === "ArrowRight" ? 1 : -1));
+        }
+      });
+    }
+    selCasa.addEventListener("change", cargar);
+    Array.prototype.forEach.call(btns, function (b) {
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(btns, function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); });
+        dias = +b.getAttribute("data-d");
+        if (serie.length) dibujar();
+      });
+    });
+    var rt; window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { if (serie.length) dibujar(); }, 200); });
+    cargar();
   }
 
   /* ---------- Conversor de criptomonedas ---------- */
@@ -315,7 +438,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    initDolarSummary(); initDolar(); initCripto(); initUnidades(); initPorcentaje(); initMonedas(); initPlazoFijo(); initAguinaldo();
+    initDolarSummary(); initDolar(); initHist(); initCripto(); initUnidades(); initPorcentaje(); initMonedas(); initPlazoFijo(); initAguinaldo();
     var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   });
 })();

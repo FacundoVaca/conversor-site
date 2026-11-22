@@ -24,6 +24,7 @@ CONFIG = {
 OUT = pathlib.Path(__file__).resolve().parent.parent / "public"
 # Versión del CSS para que los navegadores no usen una copia vieja después de cada cambio
 CSS_VERSION = hashlib.sha1((OUT / "assets" / "style.css").read_bytes()).hexdigest()[:8]
+JS_VERSION = hashlib.sha1((OUT / "assets" / "app.js").read_bytes()).hexdigest()[:8]
 
 NAV = [
     ("/dolar/", "Dólar"),
@@ -62,7 +63,7 @@ def layout(path, title, description, body, schema=""):
 <meta property="og:description" content="{html.escape(description)}">
 <meta property="og:url" content="{url}">
 <meta property="og:locale" content="es_AR">
-<meta name="theme-color" content="#10233f">
+<meta name="theme-color" content="#153c4a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap">
@@ -82,7 +83,7 @@ def layout(path, title, description, body, schema=""):
 <p class="foot-links"><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
 <p>© <span id="year"></span> {c["SITE_NAME"]}. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
 </div></footer>
-<script src="/assets/app.js" defer></script>
+<script src="/assets/app.js?v={JS_VERSION}" defer></script>
 </body>
 </html>
 """
@@ -102,9 +103,9 @@ def faq_schema(items):
 
 
 def faq_html(items):
-    return '<h2>Preguntas frecuentes</h2><dl class="faq">' + "".join(
-        f"<dt>{q}</dt><dd>{a}</dd>" for q, a in items
-    ) + "</dl>"
+    return '<h2>Preguntas frecuentes</h2><div class="faq">' + "".join(
+        f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in items
+    ) + "</div>"
 
 
 PAGES = {}
@@ -161,7 +162,7 @@ PAGES["/dolar/"] = (
     """
 <h1>Conversor de dólar a peso argentino</h1>
 <p class="lead">Elegí el tipo de cambio, escribí el monto y obtené el resultado al instante con la cotización de hoy.</p>
-<div class="card">
+<div class="card conv-main">
 <form class="conv" id="dolar-form">
 <div><label for="d-amount">Monto</label><input id="d-amount" inputmode="decimal" value="100"></div>
 <div><label for="d-dir">Quiero convertir</label><select id="d-dir"><option value="usd-ars">Dólares → Pesos</option><option value="ars-usd">Pesos → Dólares</option></select></div>
@@ -170,9 +171,25 @@ PAGES["/dolar/"] = (
 </form>
 <p class="status" id="dolar-status"></p>
 </div>
-<div class="ad-slot"></div>
 <h2>Cotizaciones de hoy</h2>
-<div class="card"><table id="dolar-table"><thead><tr><th>Tipo</th><th class="num">Compra</th><th class="num">Venta</th></tr></thead><tbody><tr><td colspan="3">Cargando…</td></tr></tbody></table></div>
+<p class="status" id="dolar-upd">Cargando cotizaciones…</p>
+<div class="cot-grid" id="dolar-cards" aria-live="polite"></div>
+<div class="ad-slot"></div>
+<h2>Comparación con el dólar oficial</h2>
+<p>La brecha indica cuánto más caro está cada dólar respecto del oficial, comparando los precios de venta.</p>
+<div class="card"><table id="dolar-table"><thead><tr><th>Tipo</th><th class="num">Compra</th><th class="num">Venta</th><th class="num">Brecha</th></tr></thead><tbody><tr><td colspan="4">Cargando…</td></tr></tbody></table></div>
+<h2>Evolución del dólar</h2>
+<section class="card hist" id="hist" aria-labelledby="h-tit">
+<div class="hist-ctrl">
+<div><label for="h-casa">Tipo de cambio</label><select id="h-casa"><option value="oficial">Dólar Oficial</option><option value="blue" selected>Dólar Blue</option><option value="bolsa">Dólar MEP (Bolsa)</option><option value="contadoconliqui">Dólar CCL</option><option value="tarjeta">Dólar Tarjeta</option><option value="cripto">Dólar Cripto</option><option value="mayorista">Dólar Mayorista</option></select></div>
+<div class="seg" role="group" aria-label="Período"><button type="button" data-d="30" aria-pressed="false">1 mes</button><button type="button" data-d="90" aria-pressed="true">3 meses</button><button type="button" data-d="180" aria-pressed="false">6 meses</button><button type="button" data-d="365" aria-pressed="false">1 año</button></div>
+</div>
+<p class="hist-tit" id="h-tit">Precio de venta</p>
+<p class="hist-dato" id="h-dato"></p>
+<div class="hist-chart" id="h-chart"></div>
+<p class="status" id="h-status">Cargando historial…</p>
+<details class="hist-tabla"><summary>Ver los datos en una tabla</summary><div id="h-tabla"></div></details>
+</section>
 <h2>Cómo se calcula la conversión</h2>
 <p>La cuenta es simple, pero conviene saber qué precio usar. Cada tipo de cambio tiene dos valores: el de <strong>compra</strong> (lo que te pagan si vendés dólares) y el de <strong>venta</strong> (lo que pagás si comprás dólares). La diferencia entre ambos se llama <em>spread</em> y es la ganancia de quien hace la operación.</p>
 <ul>
@@ -193,7 +210,14 @@ PAGES["/dolar/"] = (
 <h3>Dólar cripto</h3>
 <p>Es el precio implícito al comprar stablecoins como USDT con pesos en exchanges. Opera las 24 horas, incluso fines de semana, y por eso a veces anticipa movimientos de otras cotizaciones.</p>
 """ + faq_html(DOLAR_FAQ) + """
-<p class="disclaimer">Los valores son de referencia y provienen de DolarApi.com. Verificá siempre el precio final con la entidad con la que vayas a operar.</p>
+<h2>Fuentes y metodología</h2>
+<ul class="fuentes">
+<li><strong>Cotizaciones del día:</strong> <a href="https://dolarapi.com" rel="nofollow noopener">DolarApi.com</a>, que reúne los precios publicados por bancos, casas de cambio y el mercado. Cada tarjeta muestra la hora que informa la fuente, y la página vuelve a consultar los datos cada 5 minutos como máximo.</li>
+<li><strong>Historial:</strong> <a href="https://argentinadatos.com" rel="nofollow noopener">ArgentinaDatos</a>, con el cierre diario de cada tipo de cambio. Los fines de semana y feriados no hay datos nuevos.</li>
+<li><strong>Conversión:</strong> de dólares a pesos usamos el precio de compra, y de pesos a dólares, el de venta. El dólar tarjeta solo tiene precio de venta.</li>
+<li><strong>Brecha:</strong> (venta del dólar elegido ÷ venta del oficial − 1) × 100.</li>
+</ul>
+<p class="disclaimer">Los valores son de referencia. Verificá siempre el precio final con la entidad con la que vayas a operar.</p>
 """,
     faq_schema(DOLAR_FAQ),
 )
@@ -625,8 +649,8 @@ def build():
         (OUT / "ads.txt").write_text(f"google.com, {pub}, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
 
     (OUT / "favicon.svg").write_text(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#10233f"/>'
-        '<text x="32" y="44" font-size="36" text-anchor="middle" fill="#f5b800" font-family="Arial" font-weight="700">$</text></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="#153c4a"/>'
+        '<text x="32" y="44" font-size="34" text-anchor="middle" fill="#7fd8c3" font-family="Arial" font-weight="700">$</text></svg>',
         encoding="utf-8")
     print("Sitio generado en", OUT)
 
