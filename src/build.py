@@ -16,7 +16,7 @@ CONFIG = {
     "SITE_NAME": "Bolsillo",
     "SITE_URL": "https://bolsillo.online",       # sin barra final
     "CONTACT_EMAIL": "contacto@bolsillo.online",  # un correo que leas de verdad
-    "ADSENSE_CLIENT": "",                        # ej. "ca-pub-1234567890123456" (vacío = sin anuncios)
+    "ADSENSE_CLIENT": "ca-pub-1697004556284286",                        # ej. "ca-pub-1234567890123456" (vacío = sin anuncios)
     "UPDATED": datetime.date.today().isoformat(),
 }
 
