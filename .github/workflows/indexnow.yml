@@ -1,0 +1,31 @@
+# Cada vez que cambia el sitio en main, avisa a Bing, Yandex y otros buscadores (IndexNow)
+# qué páginas hay, para que las revisen enseguida. La clave es pública: se verifica en /f1d356fb35239d01f5ebbc15e064a017.txt
+name: Avisar a buscadores (IndexNow)
+
+on:
+  push:
+    branches: [main]
+    paths: ["public/**"]
+  workflow_dispatch: {}
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Esperar a que Cloudflare publique
+        run: sleep 90
+      - name: Avisar
+        run: |
+          python3 - <<'PY'
+          import json, re, urllib.request
+          xml = open("public/sitemap.xml", encoding="utf-8").read()
+          urls = re.findall(r"<loc>([^<]+)</loc>", xml)
+          body = json.dumps({"host": "bolsillo.online", "key": "f1d356fb35239d01f5ebbc15e064a017",
+                             "keyLocation": "https://bolsillo.online/f1d356fb35239d01f5ebbc15e064a017.txt", "urlList": urls}).encode()
+          req = urllib.request.Request("https://api.indexnow.org/indexnow", data=body,
+                                       headers={"content-type": "application/json; charset=utf-8"})
+          with urllib.request.urlopen(req, timeout=30) as r:
+              print("IndexNow:", r.status, "-", len(urls), "páginas avisadas")
+          PY
