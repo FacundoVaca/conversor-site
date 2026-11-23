@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es-AR" class="sin-js">
+<head>
+<script>document.documentElement.className="js"</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de inflación: actualizar un monto por IPC</title>
+<meta name="description" content="Calculá cuánto vale hoy una plata de hace meses o años con la inflación oficial del INDEC. Elegí el monto y los meses y obtené el resultado al instante.">
+<link rel="canonical" href="https://bolsillo.online/inflacion/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Calculadora de inflación: actualizar un monto por IPC">
+<meta property="og:description" content="Calculá cuánto vale hoy una plata de hace meses o años con la inflación oficial del INDEC. Elegí el monto y los meses y obtené el resultado al instante.">
+<meta property="og:url" content="https://bolsillo.online/inflacion/">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#153c4a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v=381fe81e">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1697004556284286" crossorigin="anonymous"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿De dónde sale la inflación que usa la calculadora?", "acceptedAnswer": {"@type": "Answer", "text": "Del índice de precios al consumidor (IPC) que publica el INDEC cada mes, tomado de ArgentinaDatos. Se actualiza sola cuando sale un dato nuevo."}}, {"@type": "Question", "name": "¿Por qué no se suman los porcentajes de cada mes?", "acceptedAnswer": {"@type": "Answer", "text": "Porque la inflación de cada mes se aplica sobre precios que ya subieron el mes anterior. Por eso se multiplican: (1 + inflación de enero) × (1 + inflación de febrero) y así."}}, {"@type": "Question", "name": "¿Puedo usarla para saber si mi sueldo le ganó a la inflación?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Actualizá tu sueldo de hace un año hasta hoy y comparalo con lo que cobrás ahora. Si cobrás más que el monto actualizado, tu sueldo le ganó."}}]}</script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-ico" aria-hidden="true"></span>Menú</button><nav class="main" id="menu" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/">Plazo fijo</a><a href="/guias/">Guías</a><div class="mas"><button class="mas-btn actual" type="button" aria-expanded="false" aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel"><a href="/monedas/">Euro y real</a><a href="/aguinaldo/">Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a><a href="/inflacion/" aria-current=page>Inflación</a><a href="/alquiler/">Alquiler</a><a href="/cuotas/">Cuotas o contado</a><a href="/vacaciones/">Vacaciones</a></div></div></nav><script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
+b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
+x.addEventListener("click",e=>{e.stopPropagation();const a=x.getAttribute("aria-expanded")!=="true";x.setAttribute("aria-expanded",a);p.classList.toggle("abierto",a)});
+document.addEventListener("click",e=>{if(!e.target.closest(".mas")){x.setAttribute("aria-expanded","false");p.classList.remove("abierto")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){x.setAttribute("aria-expanded","false");p.classList.remove("abierto");if(m.classList.contains("abierto")){b.click();b.focus()}}});})();</script>
+</div></header>
+<main><div class="wrap">
+
+<h1>Calculadora de inflación</h1>
+<p class="lead">Elegí un monto y dos meses. Te decimos cuánto equivale con la inflación oficial acumulada en el medio.</p>
+<div class="card">
+<form class="conv" id="inf-form">
+<div class="full"><label for="inf-monto">Monto ($)</label><input id="inf-monto" inputmode="decimal" value="100.000"></div>
+<div><label for="inf-desde">Desde (mes)</label><input id="inf-desde" type="month"></div>
+<div><label for="inf-hasta">Hasta (mes)</label><input id="inf-hasta" type="month"></div>
+<div class="full result" id="inf-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="inf-status">Cargando datos de inflación…</p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula</h2>
+<p>Tomamos la inflación mensual del INDEC de cada mes posterior al mes de inicio, hasta el mes final incluido, y la acumulamos:</p>
+<p class="card">Monto actualizado = Monto × (1 + IPC mes 1) × (1 + IPC mes 2) × …</p>
+<p>Por ejemplo, $100.000 de enero actualizados a marzo usan la inflación de febrero y de marzo. Si fueron 3 % y 2 %, el resultado es 100.000 × 1,03 × 1,02 = $105.060.</p>
+<h2>Preguntas frecuentes</h2><div class="faq"><details><summary>¿De dónde sale la inflación que usa la calculadora?</summary><p>Del índice de precios al consumidor (IPC) que publica el INDEC cada mes, tomado de ArgentinaDatos. Se actualiza sola cuando sale un dato nuevo.</p></details><details><summary>¿Por qué no se suman los porcentajes de cada mes?</summary><p>Porque la inflación de cada mes se aplica sobre precios que ya subieron el mes anterior. Por eso se multiplican: (1 + inflación de enero) × (1 + inflación de febrero) y así.</p></details><details><summary>¿Puedo usarla para saber si mi sueldo le ganó a la inflación?</summary><p>Sí. Actualizá tu sueldo de hace un año hasta hoy y comparalo con lo que cobrás ahora. Si cobrás más que el monto actualizado, tu sueldo le ganó.</p></details></div>
+<p class="disclaimer">La inflación oficial es un promedio de precios. Tus gastos pueden haber subido más o menos según lo que consumas.</p>
+<h2>Guías relacionadas</h2><ul><li><a href="/guias/como-actualizar-un-monto-por-inflacion/">Cómo actualizar un monto por inflación</a></li></ul>
+</div></main>
+<footer class="site"><div class="wrap">
+<p class="foot-links"><a href="https://juegos.bolsillo.online/ofertas/">Ofertas de juegos en pesos</a><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js?v=0c77f964" defer></script>
+</body>
+</html>

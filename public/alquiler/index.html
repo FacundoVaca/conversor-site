@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es-AR" class="sin-js">
+<head>
+<script>document.documentElement.className="js"</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de aumento de alquiler por IPC (inflación)</title>
+<meta name="description" content="Calculá cuánto aumenta tu alquiler según la inflación oficial y la frecuencia de tu contrato: cada 3, 4, 6 o 12 meses. Te mostramos los meses usados y el nuevo monto.">
+<link rel="canonical" href="https://bolsillo.online/alquiler/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Calculadora de aumento de alquiler por IPC (inflación)">
+<meta property="og:description" content="Calculá cuánto aumenta tu alquiler según la inflación oficial y la frecuencia de tu contrato: cada 3, 4, 6 o 12 meses. Te mostramos los meses usados y el nuevo monto.">
+<meta property="og:url" content="https://bolsillo.online/alquiler/">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#153c4a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v=381fe81e">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1697004556284286" crossorigin="anonymous"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Cada cuánto aumenta un alquiler?", "acceptedAnswer": {"@type": "Answer", "text": "Depende del contrato. Desde fines de 2023 se pacta libremente: lo más común en contratos nuevos es cada 3, 4 o 6 meses por IPC. Los contratos firmados con la ley anterior se ajustan una vez por año por ICL."}}, {"@type": "Question", "name": "¿Qué meses de inflación se usan?", "acceptedAnswer": {"@type": "Answer", "text": "Los meses del período que termina justo antes del mes del aumento. Si el último dato todavía no se publicó, la calculadora usa los últimos meses disponibles y te avisa."}}, {"@type": "Question", "name": "¿Sirve para contratos con ICL?", "acceptedAnswer": {"@type": "Answer", "text": "No. El ICL es un índice diario que publica el Banco Central. Esta calculadora usa el IPC del INDEC, que es el índice de la mayoría de los contratos nuevos."}}]}</script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-ico" aria-hidden="true"></span>Menú</button><nav class="main" id="menu" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/">Plazo fijo</a><a href="/guias/">Guías</a><div class="mas"><button class="mas-btn actual" type="button" aria-expanded="false" aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel"><a href="/monedas/">Euro y real</a><a href="/aguinaldo/">Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a><a href="/inflacion/">Inflación</a><a href="/alquiler/" aria-current=page>Alquiler</a><a href="/cuotas/">Cuotas o contado</a><a href="/vacaciones/">Vacaciones</a></div></div></nav><script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
+b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
+x.addEventListener("click",e=>{e.stopPropagation();const a=x.getAttribute("aria-expanded")!=="true";x.setAttribute("aria-expanded",a);p.classList.toggle("abierto",a)});
+document.addEventListener("click",e=>{if(!e.target.closest(".mas")){x.setAttribute("aria-expanded","false");p.classList.remove("abierto")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){x.setAttribute("aria-expanded","false");p.classList.remove("abierto");if(m.classList.contains("abierto")){b.click();b.focus()}}});})();</script>
+</div></header>
+<main><div class="wrap">
+
+<h1>Calculadora de aumento de alquiler</h1>
+<p class="lead">Poné lo que pagás hoy, cada cuántos meses se actualiza y el mes del aumento. Calculamos el nuevo alquiler con la inflación oficial (IPC).</p>
+<div class="card">
+<form class="conv" id="alq-form">
+<div class="full"><label for="alq-monto">Alquiler actual ($)</label><input id="alq-monto" inputmode="decimal" value="500.000"></div>
+<div><label for="alq-frec">Se actualiza cada</label><select id="alq-frec"><option value="3">3 meses</option><option value="4">4 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select></div>
+<div><label for="alq-mes">Mes del aumento</label><input id="alq-mes" type="month"></div>
+<div class="full result" id="alq-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="alq-status">Cargando datos de inflación…</p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula</h2>
+<p>Se acumula la inflación de los meses del período, multiplicando, no sumando:</p>
+<p class="card">Nuevo alquiler = Alquiler actual × (1 + IPC mes 1) × … × (1 + IPC último mes)</p>
+<p>Si tu alquiler aumenta en marzo cada 3 meses, se usan diciembre, enero y febrero. El INDEC publica cada dato a mediados del mes siguiente, así que a veces el último mes todavía no está: en ese caso usamos los últimos meses publicados y te lo indicamos.</p>
+<p>Leé siempre tu contrato: ahí dice el índice, la frecuencia y qué hacer si falta un dato. Más detalles en la <a href="/guias/como-calcular-aumento-de-alquiler/">guía de aumento de alquiler</a>.</p>
+<h2>Preguntas frecuentes</h2><div class="faq"><details><summary>¿Cada cuánto aumenta un alquiler?</summary><p>Depende del contrato. Desde fines de 2023 se pacta libremente: lo más común en contratos nuevos es cada 3, 4 o 6 meses por IPC. Los contratos firmados con la ley anterior se ajustan una vez por año por ICL.</p></details><details><summary>¿Qué meses de inflación se usan?</summary><p>Los meses del período que termina justo antes del mes del aumento. Si el último dato todavía no se publicó, la calculadora usa los últimos meses disponibles y te avisa.</p></details><details><summary>¿Sirve para contratos con ICL?</summary><p>No. El ICL es un índice diario que publica el Banco Central. Esta calculadora usa el IPC del INDEC, que es el índice de la mayoría de los contratos nuevos.</p></details></div>
+<p class="disclaimer">Cálculo informativo. Ante dudas sobre tu contrato, consultá con un profesional.</p>
+<h2>Guías relacionadas</h2><ul><li><a href="/guias/como-calcular-aumento-de-alquiler/">Aumento de alquiler: cómo se calcula con IPC o ICL</a></li></ul>
+</div></main>
+<footer class="site"><div class="wrap">
+<p class="foot-links"><a href="https://juegos.bolsillo.online/ofertas/">Ofertas de juegos en pesos</a><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js?v=0c77f964" defer></script>
+</body>
+</html>

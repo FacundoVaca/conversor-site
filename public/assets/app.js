@@ -437,8 +437,119 @@
     calc();
   }
 
+  /* ---------- Inflación (IPC del INDEC vía ArgentinaDatos) ---------- */
+  var INF_API = "https://api.argentinadatos.com/v1/finanzas/indices/inflacion";
+  var MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  function mIdx(ym) { var p = String(ym).split("-"); return Number(p[0]) * 12 + Number(p[1]) - 1; }
+  function mStr(i) { var y = Math.floor(i / 12), m = i % 12 + 1; return y + "-" + (m < 10 ? "0" : "") + m; }
+  function mNom(i) { return MESES[i % 12] + " " + Math.floor(i / 12); }
+  function cargarIPC() {
+    return cachedFetch(INF_API).then(function (list) {
+      var ipc = {}, ult = -1;
+      list.forEach(function (x) {
+        if (!x || !x.fecha || typeof x.valor !== "number") return;
+        var i = mIdx(x.fecha.slice(0, 7)); ipc[i] = x.valor; if (i > ult) ult = i;
+      });
+      if (ult < 0) throw new Error("sin datos");
+      return { ipc: ipc, ult: ult };
+    });
+  }
+  function acumular(d, desde, hasta) { // meses desde..hasta inclusive
+    var f = 1, usados = 0;
+    for (var i = desde; i <= hasta; i++) if (d.ipc[i] !== undefined) { f *= 1 + d.ipc[i] / 100; usados++; }
+    return { f: f, usados: usados };
+  }
+
+  function initInflacion() {
+    var form = $("#inf-form");
+    if (!form) return;
+    var status = $("#inf-status"), datos = null;
+    function calc() {
+      var out = $("#inf-result"), monto = parseNum($("#inf-monto").value);
+      if (!datos || isNaN(monto) || !$("#inf-desde").value || !$("#inf-hasta").value) { out.innerHTML = "—"; return; }
+      var a = mIdx($("#inf-desde").value), b = mIdx($("#inf-hasta").value), nota = "";
+      if (b <= a) { out.innerHTML = "—<small>El mes final tiene que ser posterior al inicial.</small>"; return; }
+      if (b > datos.ult) { b = datos.ult; nota = " · El último dato publicado es de " + mNom(datos.ult) + "."; }
+      var r = acumular(datos, a + 1, b);
+      out.innerHTML = "$ " + fmt(monto * r.f, 2) + "<small>Inflación acumulada " + fmt((r.f - 1) * 100, 2) + " % entre " + mNom(a) + " y " + mNom(b) + nota + "</small>";
+    }
+    form.addEventListener("input", calc);
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    cargarIPC().then(function (d) {
+      datos = d;
+      if (!$("#inf-hasta").value) $("#inf-hasta").value = mStr(d.ult);
+      if (!$("#inf-desde").value) $("#inf-desde").value = mStr(d.ult - 12);
+      setStatus(status, "Último dato del INDEC: " + mNom(d.ult) + " (" + fmt(d.ipc[d.ult], 1) + " %) · Fuente: ArgentinaDatos");
+      calc();
+    }).catch(function () { setStatus(status, "No pudimos cargar los datos de inflación. Probá recargar en unos minutos.", true); });
+  }
+
+  function initAlquiler() {
+    var form = $("#alq-form");
+    if (!form) return;
+    var status = $("#alq-status"), datos = null;
+    var hoy = new Date(); $("#alq-mes").value = mStr(hoy.getFullYear() * 12 + hoy.getMonth() + 1);
+    function calc() {
+      var out = $("#alq-result"), monto = parseNum($("#alq-monto").value), n = Number($("#alq-frec").value);
+      if (!datos || isNaN(monto) || !$("#alq-mes").value) { out.innerHTML = "—"; return; }
+      var fin = mIdx($("#alq-mes").value) - 1, nota = "";
+      if (fin > datos.ult) { fin = datos.ult; nota = "<br>Todavía no se publicó la inflación de todos los meses: usamos los últimos " + n + " meses disponibles."; }
+      var ini = fin - n + 1, r = acumular(datos, ini, fin);
+      out.innerHTML = "Nuevo alquiler $ " + fmt(monto * r.f, 2) + "<small>Aumento de " + fmt((r.f - 1) * 100, 2) + " % ($ " + fmt(monto * (r.f - 1), 2) + ") con la inflación de " +
+        mNom(ini) + " a " + mNom(fin) + nota + "</small>";
+    }
+    form.addEventListener("input", calc);
+    form.addEventListener("change", calc);
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    cargarIPC().then(function (d) {
+      datos = d;
+      setStatus(status, "Último dato del INDEC: " + mNom(d.ult) + " (" + fmt(d.ipc[d.ult], 1) + " %) · Fuente: ArgentinaDatos");
+      calc();
+    }).catch(function () { setStatus(status, "No pudimos cargar los datos de inflación. Probá recargar en unos minutos.", true); });
+  }
+
+  function initCuotas() {
+    var form = $("#cuo-form");
+    if (!form) return;
+    var tocado = false;
+    function calc() {
+      var out = $("#cuo-result"), contado = parseNum($("#cuo-contado").value), n = Math.round(parseNum($("#cuo-n").value)),
+        cuota = parseNum($("#cuo-valor").value), i = parseNum($("#cuo-inf").value) / 100;
+      if ([contado, n, cuota, i].some(isNaN) || n < 1 || n > 120 || i <= -1) { out.innerHTML = "—"; return; }
+      var vp = 0;
+      for (var k = 1; k <= n; k++) vp += cuota / Math.pow(1 + i, k);
+      var dif = contado - vp, total = cuota * n;
+      var txt = Math.abs(dif) < contado * 0.005 ? "Da casi lo mismo" : (dif > 0 ? "Conviene en cuotas" : "Conviene de contado");
+      out.innerHTML = txt + "<small>Las " + n + " cuotas (total $ " + fmt(total, 2) + ") valen hoy $ " + fmt(vp, 2) + " frente a $ " + fmt(contado, 2) +
+        " de contado: " + (dif > 0 ? "te ahorrás" : "pagás de más") + " $ " + fmt(Math.abs(dif), 2) + " en pesos de hoy.</small>";
+    }
+    form.addEventListener("input", function (e) { if (e.target.id === "cuo-inf") tocado = true; calc(); });
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    calc();
+    cargarIPC().then(function (d) {
+      if (!tocado) { $("#cuo-inf").value = fmt(d.ipc[d.ult], 1); calc(); }
+      setStatus($("#cuo-status"), "Completamos la última inflación mensual del INDEC (" + mNom(d.ult) + "). Podés cambiarla.");
+    }).catch(function () {});
+  }
+
+  function initVacaciones() {
+    var form = $("#vac-form");
+    if (!form) return;
+    function calc() {
+      var out = $("#vac-result"), anios = parseNum($("#vac-anios").value), sueldo = parseNum($("#vac-sueldo").value);
+      if (isNaN(anios) || isNaN(sueldo) || anios < 0) { out.innerHTML = "—"; return; }
+      var dias = anios > 20 ? 35 : anios > 10 ? 28 : anios > 5 ? 21 : 14;
+      var pago = sueldo / 25 * dias, normal = sueldo / 30 * dias;
+      out.innerHTML = dias + " días · $ " + fmt(pago, 2) + " bruto<small>Neto aproximado $ " + fmt(pago * 0.83, 2) + " · Plus vacacional $ " + fmt(pago - normal, 2) + " frente a un mes normal</small>";
+    }
+    form.addEventListener("input", calc);
+    form.addEventListener("submit", function (e) { e.preventDefault(); calc(); });
+    calc();
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     initDolarSummary(); initDolar(); initHist(); initCripto(); initUnidades(); initPorcentaje(); initMonedas(); initPlazoFijo(); initAguinaldo();
+    initInflacion(); initAlquiler(); initCuotas(); initVacaciones();
     var y = $("#year"); if (y) y.textContent = new Date().getFullYear();
   });
 })();

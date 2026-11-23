@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es-AR" class="sin-js">
+<head>
+<script>document.documentElement.className="js"</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Cuotas o contado? Calculadora para saber qué conviene</title>
+<meta name="description" content="Compará un precio en cuotas con el de contado teniendo en cuenta la inflación. Te decimos cuánto valen hoy las cuotas y qué opción te conviene.">
+<link rel="canonical" href="https://bolsillo.online/cuotas/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="¿Cuotas o contado? Calculadora para saber qué conviene">
+<meta property="og:description" content="Compará un precio en cuotas con el de contado teniendo en cuenta la inflación. Te decimos cuánto valen hoy las cuotas y qué opción te conviene.">
+<meta property="og:url" content="https://bolsillo.online/cuotas/">
+<meta property="og:locale" content="es_AR">
+<meta name="theme-color" content="#153c4a">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap">
+<link rel="stylesheet" href="/assets/style.css?v=381fe81e">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1697004556284286" crossorigin="anonymous"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué inflación pongo?", "acceptedAnswer": {"@type": "Answer", "text": "La que esperás para los próximos meses. Como referencia, la calculadora completa la última inflación mensual publicada por el INDEC. Si tenés la plata en una cuenta que rinde, podés poner ese rendimiento mensual."}}, {"@type": "Question", "name": "¿Las cuotas sin interés siempre convienen?", "acceptedAnswer": {"@type": "Answer", "text": "Casi siempre, si el precio en cuotas es igual al de contado y hay inflación. Pero si pagando en efectivo o transferencia te hacen un descuento, compará contra ese precio."}}, {"@type": "Question", "name": "¿Qué es el CFT?", "acceptedAnswer": {"@type": "Answer", "text": "El costo financiero total: el costo real de financiarte, con intereses, impuestos y cargos. Tiene que figurar en la publicidad de las cuotas con interés."}}]}</script>
+</head>
+<body>
+<header class="site"><div class="wrap">
+<a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-ico" aria-hidden="true"></span>Menú</button><nav class="main" id="menu" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/">Plazo fijo</a><a href="/guias/">Guías</a><div class="mas"><button class="mas-btn actual" type="button" aria-expanded="false" aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel"><a href="/monedas/">Euro y real</a><a href="/aguinaldo/">Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a><a href="/inflacion/">Inflación</a><a href="/alquiler/">Alquiler</a><a href="/cuotas/" aria-current=page>Cuotas o contado</a><a href="/vacaciones/">Vacaciones</a></div></div></nav><script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
+b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
+x.addEventListener("click",e=>{e.stopPropagation();const a=x.getAttribute("aria-expanded")!=="true";x.setAttribute("aria-expanded",a);p.classList.toggle("abierto",a)});
+document.addEventListener("click",e=>{if(!e.target.closest(".mas")){x.setAttribute("aria-expanded","false");p.classList.remove("abierto")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){x.setAttribute("aria-expanded","false");p.classList.remove("abierto");if(m.classList.contains("abierto")){b.click();b.focus()}}});})();</script>
+</div></header>
+<main><div class="wrap">
+
+<h1>¿Cuotas o contado?</h1>
+<p class="lead">Escribí el precio de contado, la cantidad de cuotas y lo que vale cada una. Te decimos qué conviene con la inflación que esperás.</p>
+<div class="card">
+<form class="conv" id="cuo-form">
+<div class="full"><label for="cuo-contado">Precio de contado ($)</label><input id="cuo-contado" inputmode="decimal" value="900.000"></div>
+<div><label for="cuo-n">Cantidad de cuotas</label><input id="cuo-n" inputmode="numeric" value="6"></div>
+<div><label for="cuo-valor">Valor de cada cuota ($)</label><input id="cuo-valor" inputmode="decimal" value="160.000"></div>
+<div class="full"><label for="cuo-inf">Inflación mensual esperada (%)</label><input id="cuo-inf" inputmode="decimal" value="2"></div>
+<div class="full result" id="cuo-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="cuo-status"></p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula</h2>
+<p>Cada cuota futura se lleva a “pesos de hoy” descontando la inflación esperada. Si la suma es menor que el precio de contado, las cuotas convienen.</p>
+<p class="card">Valor de hoy = Cuota ÷ (1 + i) + Cuota ÷ (1 + i)² + … + Cuota ÷ (1 + i)ⁿ</p>
+<p>Tomamos que la primera cuota se paga dentro de un mes, como pasa con la mayoría de las tarjetas. Más ejemplos en la <a href="/guias/cuotas-o-contado-que-conviene/">guía de cuotas o contado</a>.</p>
+<h2>Preguntas frecuentes</h2><div class="faq"><details><summary>¿Qué inflación pongo?</summary><p>La que esperás para los próximos meses. Como referencia, la calculadora completa la última inflación mensual publicada por el INDEC. Si tenés la plata en una cuenta que rinde, podés poner ese rendimiento mensual.</p></details><details><summary>¿Las cuotas sin interés siempre convienen?</summary><p>Casi siempre, si el precio en cuotas es igual al de contado y hay inflación. Pero si pagando en efectivo o transferencia te hacen un descuento, compará contra ese precio.</p></details><details><summary>¿Qué es el CFT?</summary><p>El costo financiero total: el costo real de financiarte, con intereses, impuestos y cargos. Tiene que figurar en la publicidad de las cuotas con interés.</p></details></div>
+<p class="disclaimer">Cálculo informativo. No incluye intereses ni cargos que no estén en el valor de la cuota.</p>
+<h2>Guías relacionadas</h2><ul><li><a href="/guias/cuotas-o-contado-que-conviene/">¿Cuotas o contado? Cómo saber qué conviene</a></li></ul>
+</div></main>
+<footer class="site"><div class="wrap">
+<p class="foot-links"><a href="https://juegos.bolsillo.online/ofertas/">Ofertas de juegos en pesos</a><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
+</div></footer>
+<script src="/assets/app.js?v=0c77f964" defer></script>
+</body>
+</html>

@@ -1,10 +1,14 @@
-// Configuración de Cloudflare Workers: el sitio es estático y se sirve desde public/
+// Configuración de Cloudflare Workers: el sitio es estático y se sirve desde public/.
+// src/worker.js solo corre en la portada y en /dolar/ para escribir las cotizaciones en el HTML.
 {
   "name": "conversor-site",
+  "main": "src/worker.js",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./public",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/", "/dolar/"]
   },
   // Necesario para las vistas previas de cada PR (npx wrangler preview)
   "previews": {}

@@ -19,7 +19,25 @@ CONFIG = {
     "CONTACT_EMAIL": "contacto@bolsillo.online",  # un correo que leas de verdad
     "ADSENSE_CLIENT": "ca-pub-1697004556284286",                        # ej. "ca-pub-1234567890123456" (vacío = sin anuncios)
     "UPDATED": datetime.date.today().isoformat(),
+    # Links de afiliado o referidos (billeteras, brokers, exchanges). Vacío = no se muestra nada.
+    # Ejemplo: {"nombre": "Mi broker", "url": "https://...?ref=TU_CODIGO", "texto": "Comprá dólar MEP desde la app.", "paginas": ["/dolar/"]}
+    "AFILIADOS": [],
+    "SITIO_GAMER": "https://juegos.bolsillo.online",
 }
+
+# Fecha en que se escribieron las guías que no tienen "actualizado" propio
+GUIAS_FECHA_BASE = "2026-11-22"
+MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+         "septiembre", "octubre", "noviembre", "diciembre"]
+
+
+def fecha_larga(iso):
+    a, m, d = (int(x) for x in iso.split("-"))
+    return f"{d} de {MESES[m - 1]} de {a}"
+
+
+def guia_fecha(g):
+    return g.get("actualizado", GUIAS_FECHA_BASE)
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "public"
 # Versión del CSS para que los navegadores no usen una copia vieja después de cada cambio
@@ -38,6 +56,10 @@ NAV_MAS = [
     ("/aguinaldo/", "Aguinaldo"),
     ("/unidades/", "Unidades"),
     ("/porcentaje/", "% e IVA"),
+    ("/inflacion/", "Inflación"),
+    ("/alquiler/", "Alquiler"),
+    ("/cuotas/", "Cuotas o contado"),
+    ("/vacaciones/", "Vacaciones"),
 ]
 MENU_JS = """<script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
 b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
@@ -100,7 +122,7 @@ def layout(path, title, description, body, schema=""):
 {body}
 </div></main>
 <footer class="site"><div class="wrap">
-<p class="foot-links"><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p class="foot-links"><a href="{c["SITIO_GAMER"]}/ofertas/">Ofertas de juegos en pesos</a><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
 <p>© <span id="year"></span> {c["SITE_NAME"]}. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
 </div></footer>
 <script src="/assets/app.js?v={JS_VERSION}" defer></script>
@@ -156,6 +178,10 @@ PAGES["/"] = (
 <a class="tile" href="/guias/"><strong>Guías</strong><small>Dólar MEP, plazo fijo, aguinaldo, IVA y más, explicado simple.</small></a>
 <a class="tile" href="/unidades/"><strong>Unidades de medida</strong><small>Longitud, peso, volumen, superficie, velocidad y temperatura.</small></a>
 <a class="tile" href="/porcentaje/"><strong>Porcentajes e IVA</strong><small>Aumentos, descuentos, variaciones y cálculo de IVA.</small></a>
+<a class="tile" href="/alquiler/"><strong>Aumento de alquiler</strong><small>Cuánto sube tu alquiler con la inflación oficial.</small></a>
+<a class="tile" href="/inflacion/"><strong>Inflación</strong><small>Cuánto vale hoy una plata de hace meses o años.</small></a>
+<a class="tile" href="/cuotas/"><strong>Cuotas o contado</strong><small>Qué conviene pagar, teniendo en cuenta la inflación.</small></a>
+<a class="tile" href="/vacaciones/"><strong>Vacaciones</strong><small>Días que te tocan y cuánto cobrás.</small></a>
 </div>
 <h2>Por qué hay tantos “dólares” en Argentina</h2>
 <p>En Argentina conviven varios tipos de cambio al mismo tiempo. El <strong>dólar oficial</strong> es el que publican los bancos y se usa como referencia para muchas operaciones reguladas. El <strong>dólar blue</strong> es el precio informal que se pacta fuera del sistema bancario. El <strong>dólar MEP</strong> (o dólar bolsa) surge de comprar un bono en pesos y venderlo en dólares dentro del mercado de capitales, y el <strong>contado con liquidación (CCL)</strong> es una operación parecida pero con los dólares acreditados en una cuenta del exterior. A eso se suma el <strong>dólar tarjeta</strong>, que es el oficial más los impuestos y percepciones que se aplican a los consumos en moneda extranjera.</p>
@@ -519,12 +545,157 @@ PAGES["/aguinaldo/"] = (
 )
 
 
+# ---------------------------------------------------------------- Inflación
+INF_FAQ = [
+    ("¿De dónde sale la inflación que usa la calculadora?",
+     "Del índice de precios al consumidor (IPC) que publica el INDEC cada mes, tomado de ArgentinaDatos. Se actualiza sola cuando sale un dato nuevo."),
+    ("¿Por qué no se suman los porcentajes de cada mes?",
+     "Porque la inflación de cada mes se aplica sobre precios que ya subieron el mes anterior. Por eso se multiplican: (1 + inflación de enero) × (1 + inflación de febrero) y así."),
+    ("¿Puedo usarla para saber si mi sueldo le ganó a la inflación?",
+     "Sí. Actualizá tu sueldo de hace un año hasta hoy y comparalo con lo que cobrás ahora. Si cobrás más que el monto actualizado, tu sueldo le ganó."),
+]
+PAGES["/inflacion/"] = (
+    "Calculadora de inflación: actualizar un monto por IPC",
+    "Calculá cuánto vale hoy una plata de hace meses o años con la inflación oficial del INDEC. Elegí el monto y los meses y obtené el resultado al instante.",
+    """
+<h1>Calculadora de inflación</h1>
+<p class="lead">Elegí un monto y dos meses. Te decimos cuánto equivale con la inflación oficial acumulada en el medio.</p>
+<div class="card">
+<form class="conv" id="inf-form">
+<div class="full"><label for="inf-monto">Monto ($)</label><input id="inf-monto" inputmode="decimal" value="100.000"></div>
+<div><label for="inf-desde">Desde (mes)</label><input id="inf-desde" type="month"></div>
+<div><label for="inf-hasta">Hasta (mes)</label><input id="inf-hasta" type="month"></div>
+<div class="full result" id="inf-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="inf-status">Cargando datos de inflación…</p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula</h2>
+<p>Tomamos la inflación mensual del INDEC de cada mes posterior al mes de inicio, hasta el mes final incluido, y la acumulamos:</p>
+<p class="card">Monto actualizado = Monto × (1 + IPC mes 1) × (1 + IPC mes 2) × …</p>
+<p>Por ejemplo, $100.000 de enero actualizados a marzo usan la inflación de febrero y de marzo. Si fueron 3 % y 2 %, el resultado es 100.000 × 1,03 × 1,02 = $105.060.</p>
+""" + faq_html(INF_FAQ) + """
+<p class="disclaimer">La inflación oficial es un promedio de precios. Tus gastos pueden haber subido más o menos según lo que consumas.</p>
+""",
+    faq_schema(INF_FAQ),
+)
+
+# ---------------------------------------------------------------- Alquiler
+ALQ_FAQ = [
+    ("¿Cada cuánto aumenta un alquiler?",
+     "Depende del contrato. Desde fines de 2023 se pacta libremente: lo más común en contratos nuevos es cada 3, 4 o 6 meses por IPC. Los contratos firmados con la ley anterior se ajustan una vez por año por ICL."),
+    ("¿Qué meses de inflación se usan?",
+     "Los meses del período que termina justo antes del mes del aumento. Si el último dato todavía no se publicó, la calculadora usa los últimos meses disponibles y te avisa."),
+    ("¿Sirve para contratos con ICL?",
+     "No. El ICL es un índice diario que publica el Banco Central. Esta calculadora usa el IPC del INDEC, que es el índice de la mayoría de los contratos nuevos."),
+]
+PAGES["/alquiler/"] = (
+    "Calculadora de aumento de alquiler por IPC (inflación)",
+    "Calculá cuánto aumenta tu alquiler según la inflación oficial y la frecuencia de tu contrato: cada 3, 4, 6 o 12 meses. Te mostramos los meses usados y el nuevo monto.",
+    """
+<h1>Calculadora de aumento de alquiler</h1>
+<p class="lead">Poné lo que pagás hoy, cada cuántos meses se actualiza y el mes del aumento. Calculamos el nuevo alquiler con la inflación oficial (IPC).</p>
+<div class="card">
+<form class="conv" id="alq-form">
+<div class="full"><label for="alq-monto">Alquiler actual ($)</label><input id="alq-monto" inputmode="decimal" value="500.000"></div>
+<div><label for="alq-frec">Se actualiza cada</label><select id="alq-frec"><option value="3">3 meses</option><option value="4">4 meses</option><option value="6">6 meses</option><option value="12">12 meses</option></select></div>
+<div><label for="alq-mes">Mes del aumento</label><input id="alq-mes" type="month"></div>
+<div class="full result" id="alq-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="alq-status">Cargando datos de inflación…</p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula</h2>
+<p>Se acumula la inflación de los meses del período, multiplicando, no sumando:</p>
+<p class="card">Nuevo alquiler = Alquiler actual × (1 + IPC mes 1) × … × (1 + IPC último mes)</p>
+<p>Si tu alquiler aumenta en marzo cada 3 meses, se usan diciembre, enero y febrero. El INDEC publica cada dato a mediados del mes siguiente, así que a veces el último mes todavía no está: en ese caso usamos los últimos meses publicados y te lo indicamos.</p>
+<p>Leé siempre tu contrato: ahí dice el índice, la frecuencia y qué hacer si falta un dato. Más detalles en la <a href="/guias/como-calcular-aumento-de-alquiler/">guía de aumento de alquiler</a>.</p>
+""" + faq_html(ALQ_FAQ) + """
+<p class="disclaimer">Cálculo informativo. Ante dudas sobre tu contrato, consultá con un profesional.</p>
+""",
+    faq_schema(ALQ_FAQ),
+)
+
+# ---------------------------------------------------------------- Cuotas o contado
+CUO_FAQ = [
+    ("¿Qué inflación pongo?",
+     "La que esperás para los próximos meses. Como referencia, la calculadora completa la última inflación mensual publicada por el INDEC. Si tenés la plata en una cuenta que rinde, podés poner ese rendimiento mensual."),
+    ("¿Las cuotas sin interés siempre convienen?",
+     "Casi siempre, si el precio en cuotas es igual al de contado y hay inflación. Pero si pagando en efectivo o transferencia te hacen un descuento, compará contra ese precio."),
+    ("¿Qué es el CFT?",
+     "El costo financiero total: el costo real de financiarte, con intereses, impuestos y cargos. Tiene que figurar en la publicidad de las cuotas con interés."),
+]
+PAGES["/cuotas/"] = (
+    "¿Cuotas o contado? Calculadora para saber qué conviene",
+    "Compará un precio en cuotas con el de contado teniendo en cuenta la inflación. Te decimos cuánto valen hoy las cuotas y qué opción te conviene.",
+    """
+<h1>¿Cuotas o contado?</h1>
+<p class="lead">Escribí el precio de contado, la cantidad de cuotas y lo que vale cada una. Te decimos qué conviene con la inflación que esperás.</p>
+<div class="card">
+<form class="conv" id="cuo-form">
+<div class="full"><label for="cuo-contado">Precio de contado ($)</label><input id="cuo-contado" inputmode="decimal" value="900.000"></div>
+<div><label for="cuo-n">Cantidad de cuotas</label><input id="cuo-n" inputmode="numeric" value="6"></div>
+<div><label for="cuo-valor">Valor de cada cuota ($)</label><input id="cuo-valor" inputmode="decimal" value="160.000"></div>
+<div class="full"><label for="cuo-inf">Inflación mensual esperada (%)</label><input id="cuo-inf" inputmode="decimal" value="2"></div>
+<div class="full result" id="cuo-result" aria-live="polite">—</div>
+</form>
+<p class="status" id="cuo-status"></p>
+</div>
+<div class="ad-slot"></div>
+<h2>Cómo se calcula</h2>
+<p>Cada cuota futura se lleva a “pesos de hoy” descontando la inflación esperada. Si la suma es menor que el precio de contado, las cuotas convienen.</p>
+<p class="card">Valor de hoy = Cuota ÷ (1 + i) + Cuota ÷ (1 + i)² + … + Cuota ÷ (1 + i)ⁿ</p>
+<p>Tomamos que la primera cuota se paga dentro de un mes, como pasa con la mayoría de las tarjetas. Más ejemplos en la <a href="/guias/cuotas-o-contado-que-conviene/">guía de cuotas o contado</a>.</p>
+""" + faq_html(CUO_FAQ) + """
+<p class="disclaimer">Cálculo informativo. No incluye intereses ni cargos que no estén en el valor de la cuota.</p>
+""",
+    faq_schema(CUO_FAQ),
+)
+
+# ---------------------------------------------------------------- Vacaciones
+VAC_FAQ = [
+    ("¿Cómo se cuenta la antigüedad?",
+     "Al 31 de diciembre del año de las vacaciones. Por ejemplo, si en noviembre cumplís 5 años y 2 meses de trabajo, ese año te corresponden 21 días: hacen falta más de 5 años completos."),
+    ("¿Por qué se divide por 25 y no por 30?",
+     "Porque la ley lo establece así para los sueldos mensuales. Por eso cada día de vacaciones se paga un poco más que un día normal: es el llamado plus vacacional."),
+    ("¿Y si no trabajé todo el año?",
+     "Si trabajaste menos de la mitad de los días hábiles del año, te corresponde un día de vacaciones cada veinte días trabajados."),
+]
+PAGES["/vacaciones/"] = (
+    "Calculadora de vacaciones: días y cuánto se cobra",
+    "Calculá cuántos días de vacaciones te corresponden según tu antigüedad y cuánto cobrás por ellas con tu sueldo bruto, según la Ley de Contrato de Trabajo.",
+    """
+<h1>Calculadora de vacaciones</h1>
+<p class="lead">Poné tu antigüedad y tu sueldo bruto. Te decimos cuántos días te tocan y cuánto cobrás.</p>
+<div class="card">
+<form class="conv" id="vac-form">
+<div><label for="vac-anios">Antigüedad al 31/12 (años)</label><input id="vac-anios" inputmode="decimal" value="3"></div>
+<div><label for="vac-sueldo">Sueldo bruto mensual ($)</label><input id="vac-sueldo" inputmode="decimal" value="1.000.000"></div>
+<div class="full result" id="vac-result" aria-live="polite">—</div>
+</form>
+<p class="status">Mínimos de la Ley de Contrato de Trabajo. Tu convenio puede darte más días.</p>
+</div>
+<div class="ad-slot"></div>
+<h2>Días por antigüedad</h2>
+<table>
+<thead><tr><th>Antigüedad</th><th class="num">Días corridos</th></tr></thead>
+<tbody><tr><td>Hasta 5 años</td><td class="num">14</td></tr><tr><td>Más de 5 y hasta 10 años</td><td class="num">21</td></tr><tr><td>Más de 10 y hasta 20 años</td><td class="num">28</td></tr><tr><td>Más de 20 años</td><td class="num">35</td></tr></tbody>
+</table>
+<h2>Cómo se calcula el pago</h2>
+<p class="card">Pago de vacaciones = Sueldo bruto ÷ 25 × Días</p>
+<p>Al monto se le descuentan los mismos aportes que al sueldo (en general, 17 %). Las vacaciones se pagan al empezar el descanso. Más detalles en la <a href="/guias/cuantos-dias-de-vacaciones-me-corresponden/">guía de vacaciones</a>.</p>
+""" + faq_html(VAC_FAQ) + """
+<p class="disclaimer">Cálculo informativo basado en la Ley de Contrato de Trabajo. No reemplaza la liquidación de tu empleador.</p>
+""",
+    faq_schema(VAC_FAQ),
+)
+
 # ---------------------------------------------------------------- Guías
 def article_schema(g, url):
     import json
     data = {
         "@context": "https://schema.org", "@type": "Article", "headline": g["titulo"],
-        "description": g["desc"], "datePublished": CONFIG["UPDATED"], "dateModified": CONFIG["UPDATED"],
+        "description": g["desc"], "datePublished": GUIAS_FECHA_BASE, "dateModified": guia_fecha(g),
         "inLanguage": "es-AR", "mainEntityOfPage": url,
         "author": {"@type": "Organization", "name": CONFIG["SITE_NAME"]},
         "publisher": {"@type": "Organization", "name": CONFIG["SITE_NAME"]},
@@ -541,7 +712,7 @@ for _g in GUIAS:
         f"""<p class="status"><a href="/guias/">Guías</a> › {_g['titulo']}</p>
 <h1>{_g['titulo']}</h1>
 <p class="lead">{_g['desc']}</p>
-<p class="status">Actualizado: {CONFIG['UPDATED']}</p>
+<p class="status">Actualizado el {fecha_larga(guia_fecha(_g))}</p>
 <p><a class="tile tool-link" href="{_g['tool'][0]}"><strong>{_g['tool'][1]}</strong></a></p>
 {_g['body']}
 <div class="ad-slot"></div>
@@ -558,7 +729,9 @@ PAGES["/guias/"] = (
     """<h1>Guías</h1>
 <p class="lead">Explicaciones claras y con ejemplos sobre dólar, ahorro, sueldo e impuestos en Argentina.</p>
 <div class="grid tools">""" + "".join(
-        f'<a class="tile" href="/guias/{g["slug"]}/"><strong>{g["titulo"]}</strong><small>{g["desc"]}</small></a>' for g in GUIAS
+        f'<a class="tile" href="/guias/{g["slug"]}/"><strong>{g["titulo"]}</strong><small>{g["desc"]}</small>'
+        f'<small class="fecha">Actualizado el {fecha_larga(guia_fecha(g))}</small></a>'
+        for g in sorted(GUIAS, key=guia_fecha, reverse=True)
     ) + "</div>",
 )
 
@@ -638,6 +811,9 @@ PAGES["/terminos/"] = (
 )
 
 
+LASTMOD = {f"/guias/{g['slug']}/": guia_fecha(g) for g in GUIAS}
+
+
 def build():
     for path, page in PAGES.items():
         title, desc, body, *rest = page
@@ -645,6 +821,13 @@ def build():
         if related:
             body += "<h2>Guías relacionadas</h2><ul>" + "".join(
                 f'<li><a href="/guias/{g["slug"]}/">{g["titulo"]}</a></li>' for g in related) + "</ul>"
+        afis = [a for a in CONFIG["AFILIADOS"] if path in a.get("paginas", [])]
+        if afis:
+            body += ('<h2>Dónde operar</h2><div class="grid tools">' + "".join(
+                f'<a class="tile" href="{html.escape(a["url"])}" rel="sponsored nofollow noopener" target="_blank">'
+                f'<strong>{html.escape(a["nombre"])}</strong><small>{html.escape(a["texto"])}</small></a>' for a in afis)
+                + '</div><p class="disclaimer">Algunos de estos links son de referidos: si abrís una cuenta, '
+                'podemos recibir una comisión sin costo para vos. No es una recomendación de inversión.</p>')
         schema = rest[0] if rest else ""
         target = OUT / path.strip("/") / "index.html" if path != "/" else OUT / "index.html"
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -656,7 +839,7 @@ def build():
 
     # sitemap y robots
     urls = "".join(
-        f"<url><loc>{CONFIG['SITE_URL']}{p}</loc><lastmod>{CONFIG['UPDATED']}</lastmod></url>" for p in PAGES
+        f"<url><loc>{CONFIG['SITE_URL']}{p}</loc><lastmod>{LASTMOD.get(p, CONFIG['UPDATED'])}</lastmod></url>" for p in PAGES
     )
     (OUT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
