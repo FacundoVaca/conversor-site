@@ -23,7 +23,7 @@
 <body>
 <header class="site"><div class="wrap">
 <a class="logo" href="/"><span>&#36;</span> Bolsillo</a>
-<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-ico" aria-hidden="true"></span>Menú</button><nav class="main" id="menu" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/">Plazo fijo</a><a href="/guias/">Guías</a><div class="mas"><button class="mas-btn actual" type="button" aria-expanded="false" aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel"><a href="/monedas/">Euro y real</a><a href="/aguinaldo/" aria-current=page>Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a></div></div></nav><script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="menu-ico" aria-hidden="true"></span>Menú</button><nav class="main" id="menu" aria-label="Herramientas"><a href="/dolar/">Dólar</a><a href="/cripto/">Cripto</a><a href="/plazo-fijo/">Plazo fijo</a><a href="/guias/">Guías</a><div class="mas"><button class="mas-btn actual" type="button" aria-expanded="false" aria-controls="mas-panel">Más</button><div class="mas-panel" id="mas-panel"><a href="/monedas/">Euro y real</a><a href="/aguinaldo/" aria-current=page>Aguinaldo</a><a href="/unidades/">Unidades</a><a href="/porcentaje/">% e IVA</a><a href="/inflacion/">Inflación</a><a href="/alquiler/">Alquiler</a><a href="/cuotas/">Cuotas o contado</a><a href="/vacaciones/">Vacaciones</a></div></div></nav><script>(()=>{const b=document.querySelector(".menu-btn"),m=document.getElementById("menu"),x=document.querySelector(".mas-btn"),p=document.getElementById("mas-panel");
 b.addEventListener("click",()=>{const a=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",a);m.classList.toggle("abierto",a)});
 x.addEventListener("click",e=>{e.stopPropagation();const a=x.getAttribute("aria-expanded")!=="true";x.setAttribute("aria-expanded",a);p.classList.toggle("abierto",a)});
 document.addEventListener("click",e=>{if(!e.target.closest(".mas")){x.setAttribute("aria-expanded","false");p.classList.remove("abierto")}});
@@ -51,12 +51,12 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){x.setAttribute("ari
 <p>Si tu mejor sueldo bruto del semestre fue de $800.000 y trabajaste los seis meses, el aguinaldo bruto es de $400.000. Descontando el 17 % de aportes, cobrás alrededor de $332.000.</p>
 <h2>Preguntas frecuentes</h2><div class="faq"><details><summary>¿Cuándo se cobra el aguinaldo?</summary><p>En dos cuotas: la primera hasta el 30 de junio y la segunda hasta el 18 de diciembre. Hay cuatro días hábiles adicionales de plazo para el pago.</p></details><details><summary>¿Qué sueldo se toma para el cálculo?</summary><p>La mejor remuneración mensual bruta del semestre, incluyendo horas extra y conceptos remunerativos.</p></details><details><summary>¿Cómo se calcula si trabajé menos de seis meses?</summary><p>Se paga en forma proporcional: la mitad del mejor sueldo multiplicada por los meses trabajados y dividida por seis. Para mayor precisión, se puede hacer por días trabajados.</p></details></div>
 <p class="disclaimer">Cálculo orientativo. Ante dudas sobre tu caso, consultá tu recibo de sueldo, a tu empleador o a un contador.</p>
-<h2>Guías relacionadas</h2><ul><li><a href="/guias/cuando-se-cobra-el-aguinaldo/">Aguinaldo: cuándo se cobra y cómo se calcula</a></li></ul>
+<h2>Guías relacionadas</h2><ul><li><a href="/guias/cuando-se-cobra-el-aguinaldo/">Aguinaldo de diciembre 2026: cuándo se cobra y cómo se calcula</a></li></ul>
 </div></main>
 <footer class="site"><div class="wrap">
-<p class="foot-links"><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
+<p class="foot-links"><a href="https://juegos.bolsillo.online/ofertas/">Ofertas de juegos en pesos</a><a href="/sobre-nosotros/">Sobre nosotros</a><a href="/contacto/">Contacto</a><a href="/privacidad/">Política de privacidad</a><a href="/terminos/">Términos de uso</a></p>
 <p>© <span id="year"></span> Bolsillo. Las cotizaciones son de referencia y pueden diferir de las de tu banco, casa de cambio o exchange. Nada de lo publicado constituye asesoramiento financiero.</p>
 </div></footer>
-<script src="/assets/app.js?v=ba4b1d93" defer></script>
+<script src="/assets/app.js?v=0c77f964" defer></script>
 </body>
 </html>

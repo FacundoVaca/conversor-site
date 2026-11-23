@@ -56,6 +56,7 @@ GUIAS = [
 </ul>
 <h2>Ejemplo</h2>
 <p>Si una suscripción cuesta 10 dólares y el dólar tarjeta está a $1.400, el cargo en pesos será de unos $14.000. Si en cambio pagás esos 10 dólares con dólares que compraste en el MEP a $1.200, te cuesta unos $12.000 más las comisiones de la compra.</p>
+<p>¿Comprás juegos en Steam, PlayStation o Xbox? En <a href="https://juegos.bolsillo.online/ofertas/">Bolsillo Gamer</a> ves las ofertas del día con el precio ya pasado a pesos con el dólar tarjeta.</p>
 """,
     },
     {
@@ -92,7 +93,8 @@ GUIAS = [
     },
     {
         "slug": "cuando-se-cobra-el-aguinaldo",
-        "titulo": "Aguinaldo: cuándo se cobra y cómo se calcula",
+        "titulo": "Aguinaldo de diciembre 2026: cuándo se cobra y cómo se calcula",
+        "actualizado": "2026-11-23",
         "desc": "Fechas de pago del aguinaldo en Argentina, quiénes lo cobran, cómo se calcula el medio aguinaldo y el proporcional, y qué descuentos tiene.",
         "tool": ("/aguinaldo/", "Calcular mi aguinaldo"),
         "body": """
@@ -103,6 +105,9 @@ GUIAS = [
 <li><strong>Segunda cuota</strong>: corresponde al semestre julio a diciembre. Vence el 18 de diciembre.</li>
 </ul>
 <p>La ley da un plazo adicional de cuatro días hábiles para el pago, así que muchas empresas lo depositan en los primeros días de julio o en la última semana de diciembre.</p>
+<h2>Aguinaldo de diciembre 2026</h2>
+<p>La segunda cuota de 2026 vence el <strong>viernes 18 de diciembre de 2026</strong>. Con los cuatro días hábiles de tolerancia, el último día para pagarla cae en la semana de Navidad. Los jubilados y pensionados de ANSES lo cobran junto con el haber de diciembre, según el calendario de pagos por terminación de documento.</p>
+<p>Corresponde al semestre de julio a diciembre: si trabajaste todo el semestre, cobrás la mitad del mejor sueldo bruto de esos meses. Para saber cuánto te toca, usá la <a href="/aguinaldo/">calculadora de aguinaldo</a>.</p>
 <h2>Quiénes lo cobran</h2>
 <p>Lo cobran los trabajadores registrados en relación de dependencia, incluido el personal de casas particulares, los jubilados y los pensionados. Los monotributistas y autónomos no cobran aguinaldo.</p>
 <h2>Cómo se calcula</h2>
@@ -240,6 +245,139 @@ GUIAS = [
 <p>Por la ley de transparencia fiscal, los tickets y facturas a consumidores finales muestran cuánto IVA y otros impuestos nacionales están incluidos en el precio. Es una buena forma de ver cuánto de lo que pagás son impuestos.</p>
 <p>Hacé tus cuentas en la <a href="/porcentaje/">calculadora de IVA</a>, donde podés elegir cualquier alícuota.</p>
 <p class="disclaimer">Información general. Para casos puntuales de facturación, consultá a un contador o el sitio de ARCA.</p>
+""",
+    },
+    {
+        "slug": "dolar-para-viajar-brasil-chile-uruguay",
+        "titulo": "Viajar a Brasil, Chile o Uruguay: cómo pagar y qué dólar conviene",
+        "actualizado": "2026-11-23",
+        "desc": "Tarjeta, efectivo o billetera virtual: cómo conviene pagar en las vacaciones de verano en Brasil, Chile y Uruguay, y cómo calcular cuánto te sale en pesos.",
+        "tool": ("/monedas/", "Pasar reales, pesos chilenos y uruguayos a pesos"),
+        "body": """
+<p>Cada verano se repite la misma duda: ¿llevo dólares, pago con tarjeta o uso una billetera? No hay una respuesta única, porque depende de cuánto estén el dólar tarjeta y el MEP ese día. Lo que sí podés hacer es comparar las opciones con números antes de salir.</p>
+<h2>Las tres formas de pagar</h2>
+<ul>
+<li><strong>Tarjeta de crédito argentina.</strong> El consumo se convierte al dólar tarjeta, que es el oficial más impuestos y percepciones. Es cómodo y seguro, pero suele ser la opción más cara si no pagás el resumen con dólares propios.</li>
+<li><strong>Tarjeta de débito con dólares propios.</strong> Si tenés dólares en tu caja de ahorro, muchos bancos debitan el gasto directamente de ahí. En general no se aplican las percepciones sobre ese pago, así que el costo real es el precio al que compraste esos dólares (por ejemplo, en el MEP).</li>
+<li><strong>Efectivo.</strong> Llevar dólares y cambiarlos allá. En Uruguay se aceptan dólares en muchos comercios; en Brasil y Chile vas a tener que cambiarlos a moneda local, y la casa de cambio se queda con una diferencia.</li>
+</ul>
+<h2>Billeteras virtuales y QR</h2>
+<p>Algunas billeteras y bancos argentinos ya permiten pagar con QR en el exterior, por ejemplo con Pix en Brasil. Antes de viajar, revisá si la tuya lo ofrece, a qué tipo de cambio convierte y si cobra comisión. A veces convierte a un valor cercano al MEP, lo que puede salir más barato que la tarjeta de crédito.</p>
+<h2>Cómo comparar en dos minutos</h2>
+<ol>
+<li>Mirá el precio en moneda local (reales, pesos chilenos o uruguayos).</li>
+<li>Pasalo a pesos con nuestro <a href="/monedas/">conversor de monedas</a>.</li>
+<li>Compará con el <a href="/dolar/">dólar tarjeta y el MEP de hoy</a>: la diferencia entre los dos te dice cuánto te ahorrás pagando con dólares propios.</li>
+</ol>
+<h2>Ejemplo</h2>
+<p>Una cena de 200 reales en Florianópolis. Si el real equivale a unos 0,18 dólares, son 36 dólares. Con un dólar tarjeta de $1.900 te cuesta unos $68.400; con dólares comprados en el MEP a $1.500, unos $54.000. Son valores de ejemplo: hacé la cuenta con las cotizaciones del día.</p>
+<h2>Consejos para el viaje</h2>
+<ul>
+<li>Si un comercio te ofrece cobrarte en pesos argentinos, decí que no: casi siempre usa un tipo de cambio peor. Pagá en la moneda del país.</li>
+<li>Avisá a tu banco que vas a viajar y revisá los límites de compra en el exterior.</li>
+<li>Llevá un poco de efectivo en moneda local para gastos chicos, peajes o lugares que no aceptan tarjeta.</li>
+</ul>
+<p class="disclaimer">Las condiciones de bancos y billeteras cambian seguido. Confirmá con tu entidad antes de viajar.</p>
+""",
+    },
+    {
+        "slug": "como-calcular-aumento-de-alquiler",
+        "titulo": "Aumento de alquiler: cómo se calcula con IPC o ICL",
+        "actualizado": "2026-11-23",
+        "desc": "Cómo saber cuánto aumenta tu alquiler según el índice y la frecuencia de tu contrato, con ejemplos y una calculadora que usa la inflación oficial.",
+        "tool": ("/alquiler/", "Calcular el aumento de mi alquiler"),
+        "body": """
+<p>Desde fines de 2023, cuando se derogó la ley de alquileres, el índice y la frecuencia de actualización se pactan libremente en cada contrato. Por eso lo primero es leer tu contrato: ahí dice cada cuántos meses aumenta y con qué índice.</p>
+<h2>Los índices más usados</h2>
+<ul>
+<li><strong>IPC (inflación del INDEC).</strong> Es el más común en los contratos nuevos. El alquiler sube lo mismo que subieron los precios en los meses del período.</li>
+<li><strong>ICL (Índice para Contratos de Locación).</strong> Lo publica el Banco Central y se usa en los contratos firmados con la ley anterior (entre julio de 2020 y diciembre de 2023), que se ajustan una vez por año.</li>
+<li><strong>Porcentaje fijo.</strong> Algunos contratos fijan un aumento conocido de antemano, por ejemplo 10 % cada cuatro meses.</li>
+</ul>
+<h2>Cómo se calcula con IPC</h2>
+<p>Se acumula la inflación de los meses del período. No se suman los porcentajes: se multiplican.</p>
+<p class="card">Nuevo alquiler = Alquiler actual × (1 + IPC mes 1) × (1 + IPC mes 2) × … × (1 + IPC último mes)</p>
+<p>Por ejemplo, un alquiler de $500.000 que se actualiza cada tres meses, con inflación de 2 %, 1,8 % y 2,2 %: 500.000 × 1,02 × 1,018 × 1,022 = $530.602. El aumento es de 6,12 %, un poco más que la suma simple (6 %).</p>
+<h2>Qué meses se toman</h2>
+<p>Normalmente se usan los últimos meses publicados antes del mes del aumento. Como el INDEC publica la inflación a mediados del mes siguiente, a veces el último dato todavía no salió. Muchos contratos aclaran qué hacer en ese caso; si el tuyo no dice nada, lo habitual es usar los últimos meses disponibles.</p>
+<p>La <a href="/alquiler/">calculadora de alquiler</a> toma automáticamente la inflación oficial y te muestra qué meses usó.</p>
+<h2>Si tu contrato usa ICL</h2>
+<p>El aumento anual es el cociente entre el ICL del día de inicio del nuevo año de contrato y el del inicio del anterior. El valor diario del ICL se publica en el sitio del Banco Central.</p>
+<p class="disclaimer">Información general. Ante dudas sobre tu contrato, consultá con un abogado o con el colegio de martilleros de tu provincia.</p>
+""",
+    },
+    {
+        "slug": "como-actualizar-un-monto-por-inflacion",
+        "titulo": "Cómo actualizar un monto por inflación",
+        "actualizado": "2026-11-23",
+        "desc": "Cómo saber cuánto equivale hoy una plata de hace meses o años usando la inflación oficial del INDEC, con la fórmula y ejemplos.",
+        "tool": ("/inflacion/", "Actualizar un monto por inflación"),
+        "body": """
+<p>¿Cuánto serían hoy los $100.000 que cobrabas hace un año? ¿Una deuda de 2024 vale lo mismo ahora? Para responderlo hay que actualizar el monto por inflación, es decir, ajustarlo por cuánto subieron los precios en el medio.</p>
+<h2>La fórmula</h2>
+<p>Se multiplica el monto por la inflación de cada mes del período:</p>
+<p class="card">Monto actualizado = Monto × (1 + inflación mes 1) × (1 + inflación mes 2) × …</p>
+<p>Si los precios subieron 3 % un mes y 2 % el siguiente, $100.000 pasan a ser 100.000 × 1,03 × 1,02 = $105.060.</p>
+<h2>Para qué sirve</h2>
+<ul>
+<li>Saber si tu sueldo de hoy alcanza para lo mismo que hace un año (mirá también la guía sobre <a href="/guias/como-calcular-aumento-de-sueldo-inflacion/">aumento de sueldo e inflación</a>).</li>
+<li>Comparar precios de distintos años sin que te engañe la inflación.</li>
+<li>Calcular cuánto debería valer una cuota, un alquiler o un presupuesto viejo.</li>
+</ul>
+<h2>De dónde salen los datos</h2>
+<p>Usamos el índice de precios al consumidor (IPC) del INDEC, que se publica cada mes. La <a href="/inflacion/">calculadora de inflación</a> los trae solos: solo elegís el monto y los meses.</p>
+<p class="disclaimer">La inflación oficial es un promedio: tus gastos pueden haber subido más o menos según lo que consumas.</p>
+""",
+    },
+    {
+        "slug": "cuotas-o-contado-que-conviene",
+        "titulo": "¿Cuotas o contado? Cómo saber qué conviene",
+        "actualizado": "2026-11-23",
+        "desc": "Cómo comparar un precio en cuotas con el precio de contado teniendo en cuenta la inflación, con ejemplos y una calculadora simple.",
+        "tool": ("/cuotas/", "Comparar cuotas y contado"),
+        "body": """
+<p>Con inflación, pagar en cuotas fijas puede convenir aunque el total sea más alto que el precio de contado. La razón es simple: las cuotas de más adelante las pagás con pesos que valen menos.</p>
+<h2>La idea</h2>
+<p>Para comparar, hay que llevar cada cuota a “pesos de hoy”. Si la inflación es de 2 % por mes, una cuota de $10.000 dentro de un mes equivale a unos $9.804 de hoy, y la del mes siguiente, a $9.612.</p>
+<p class="card">Valor de hoy de las cuotas = Cuota ÷ (1 + i) + Cuota ÷ (1 + i)² + … + Cuota ÷ (1 + i)ⁿ</p>
+<p>Donde <em>i</em> es la inflación mensual que esperás y <em>n</em> la cantidad de cuotas. Si ese total es menor que el precio de contado, conviene pagar en cuotas.</p>
+<h2>Ejemplo</h2>
+<p>Una heladera cuesta $900.000 de contado o 6 cuotas de $160.000 (total $960.000). Con una inflación esperada de 2 % mensual, las 6 cuotas valen hoy unos $896.000. Es casi lo mismo que el contado, así que la diferencia es mínima. Si la inflación fuera más alta, las cuotas ganarían; si fuera más baja, convendría el contado.</p>
+<h2>Lo que también hay que mirar</h2>
+<ul>
+<li><strong>Descuento por pago en efectivo o transferencia.</strong> Muchos comercios hacen un 10 % o más. Usá ese precio como “contado”.</li>
+<li><strong>Costo financiero total (CFT).</strong> Si las cuotas tienen interés, el CFT figura en la publicidad y en el resumen. Las cuotas “sin interés” igual pueden tener un precio de lista más alto.</li>
+<li><strong>Dónde tenés la plata mientras tanto.</strong> Si guardás el contado en una cuenta que rinde, podés usar ese rendimiento mensual en lugar de la inflación.</li>
+</ul>
+<p>Hacé la cuenta con tus números en la <a href="/cuotas/">calculadora de cuotas o contado</a>.</p>
+""",
+    },
+    {
+        "slug": "cuantos-dias-de-vacaciones-me-corresponden",
+        "titulo": "Vacaciones: cuántos días te corresponden y cuánto se cobra",
+        "actualizado": "2026-11-23",
+        "desc": "Cuántos días de vacaciones te tocan según tu antigüedad, cuándo te las tienen que dar y cómo se calcula el pago de las vacaciones en Argentina.",
+        "tool": ("/vacaciones/", "Calcular mis vacaciones"),
+        "body": """
+<p>La Ley de Contrato de Trabajo fija un mínimo de días de vacaciones pagas para quienes trabajan en relación de dependencia. Tu convenio colectivo puede darte más días, nunca menos.</p>
+<h2>Cuántos días te tocan</h2>
+<table>
+<thead><tr><th>Antigüedad al 31 de diciembre</th><th class="num">Días corridos</th></tr></thead>
+<tbody>
+<tr><td>Hasta 5 años</td><td class="num">14</td></tr>
+<tr><td>Más de 5 y hasta 10 años</td><td class="num">21</td></tr>
+<tr><td>Más de 10 y hasta 20 años</td><td class="num">28</td></tr>
+<tr><td>Más de 20 años</td><td class="num">35</td></tr>
+</tbody></table>
+<p>Para tener las vacaciones completas tenés que haber trabajado al menos la mitad de los días hábiles del año. Si empezaste hace poco y no llegás, te corresponde un día de vacaciones cada veinte días trabajados.</p>
+<h2>Cuándo te las tienen que dar</h2>
+<p>El empleador elige la fecha entre el 1 de octubre y el 30 de abril, y te la tiene que avisar por escrito con al menos 45 días de anticipación. Las vacaciones empiezan un lunes o el día hábil siguiente si es feriado.</p>
+<h2>Cuánto se cobra</h2>
+<p>Si cobrás un sueldo mensual, cada día de vacaciones se paga como el sueldo dividido 25 (no por 30). Por eso en el recibo aparece un “plus vacacional”.</p>
+<p class="card">Pago de vacaciones = Sueldo bruto ÷ 25 × Días de vacaciones</p>
+<p>Ejemplo: con un sueldo bruto de $1.000.000 y 14 días, cobrás 1.000.000 ÷ 25 × 14 = $560.000 por las vacaciones, en lugar de los $466.667 que corresponderían a esos días con el sueldo normal. Se tienen que pagar al empezar las vacaciones.</p>
+<p>Hacé la cuenta con tus datos en la <a href="/vacaciones/">calculadora de vacaciones</a>.</p>
+<p class="disclaimer">Información general basada en la Ley de Contrato de Trabajo. Revisá tu convenio colectivo, que puede mejorar estas condiciones.</p>
 """,
     },
 ]

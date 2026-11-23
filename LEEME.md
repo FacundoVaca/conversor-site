@@ -13,6 +13,12 @@ Sitio estático (HTML + CSS + JS, sin servidor ni base de datos), en español de
 | Porcentajes, aumentos, descuentos e IVA | `/porcentaje/` | local |
 | Sobre nosotros, Contacto, Privacidad, Términos | `/sobre-nosotros/` etc. | — |
 
+También: calculadoras de inflación (`/inflacion/`), aumento de alquiler (`/alquiler/`), cuotas o contado (`/cuotas/`) y vacaciones (`/vacaciones/`), con la inflación del INDEC vía ArgentinaDatos.
+
+**Cotizaciones en el HTML:** `src/worker.js` corre solo en `/` y `/dolar/` y escribe los precios del dólar directamente en la página (cache de 5 minutos), para que se vean al abrir y Google los lea. Si DolarApi falla, la página sale igual y el navegador las carga como siempre.
+
+**Afiliados:** cargá tus links de referidos en `CONFIG["AFILIADOS"]` (en `src/build.py`) con las páginas donde querés que aparezcan. Mientras esté vacío no se muestra nada.
+
 Además: `sitemap.xml`, `robots.txt`, `404.html`, favicon, metadatos SEO, datos estructurados de preguntas frecuentes, y `ads.txt` automático cuando cargues tu ID de AdSense.
 
 Las cotizaciones se guardan 5 minutos en el navegador para no saturar las APIs. Si una API falla, se muestra el último valor conocido o un aviso.
